@@ -127,8 +127,8 @@ namespace TraceWizard.Data
 
         private void ParseFromClause()
         {
-            Regex fromClause = new Regex(" FROM (.*?)(WHERE|ORDER|$)",RegexOptions.IgnoreCase);
-            FromClause = fromClause.Match(Statement).Groups[1].Value.Trim();
+            Regex fromClause = new Regex("(FROM|UPDATE) (.*?) (SET|WHERE|ORDER|$)",RegexOptions.IgnoreCase);
+            FromClause = fromClause.Match(Statement).Groups[2].Value.Trim();
         }
 
         private void DetermineType()

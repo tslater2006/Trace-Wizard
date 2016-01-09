@@ -128,8 +128,22 @@ namespace TraceWizard
             if (call.Type == ExecutionCallType.SQL)
             {
                 var sqlItem = call.SQLStatement;
-                sqlItem.ParentCall = call.Parent;
-                newRoot = root.Nodes.Add("SELECT FROM " + sqlItem.FromClause + "Fetched=" + sqlItem.FetchCount + " Dur=" + sqlItem.Duration);
+                switch(sqlItem.Type)
+                {
+                    case SQLType.SELECT:
+                        newRoot = root.Nodes.Add("SELECT FROM " + sqlItem.FromClause + "Fetched=" + sqlItem.FetchCount + " Dur=" + sqlItem.Duration);
+                        break;
+                    case SQLType.UPDATE:
+                        newRoot = root.Nodes.Add("UPDATE " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
+                        break;
+                    case SQLType.INSERT:
+                        newRoot = root.Nodes.Add("INSERT INTO " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
+                        break;
+                    case SQLType.DELETE:
+                        newRoot = root.Nodes.Add("DELETE FROM " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
+                        break;
+                }
+                
                 SQLMapToTree.Add(sqlItem, newRoot);
                 newRoot.Tag = sqlItem;
                 if (sqlItem.IsError)

@@ -50,13 +50,19 @@ namespace TraceWizard.Data
         public bool HasError;
         public bool IsError;
         public int indentCount;
-        public string Context;
-        public string Nest;
-        public string Function;
-
-        public List<Tuple<string,string>> Parameters = new List<Tuple<string, string>>();
+        public string Context = "";
+        public string Nest = "";
+        public string Function = "";
 
         protected double _duration;
+
+        public double InternalDuration
+        {
+            get
+            {
+                return _duration;
+            }
+        }
 
         public double Duration
         {
@@ -84,6 +90,13 @@ namespace TraceWizard.Data
 
         public long StartLine;
         private long _stopLine;
+        public long InternalStopLine
+        {
+            get
+            {
+                return _stopLine;
+            }
+        }
         public long StopLine { get
             {
                 if (Type != ExecutionCallType.CALL)

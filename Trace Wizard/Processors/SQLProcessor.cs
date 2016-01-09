@@ -145,8 +145,6 @@ namespace TraceWizard.Processors
             }
 
             var sqlByFromList = td.SQLByFrom;
-            var test = Statements.Where(p => p.Type == SQLType.SELECT && p.FromClause.ToUpper().Contains("PSMSGNODEDEFN")).GroupBy(p => p.FromClause).ToList();
-
             var byFroms = Statements.Where(p => p.Type == SQLType.SELECT || p.Type == SQLType.DELETE).GroupBy(p => p.FromClause).Select(g => new SQLByFrom{ NumberOfCalls = g.Count(), TotalTime = g.Sum(i => i.Duration), FromClause = g.Key, HasError = g.Count(p => p.IsError) > 0 ? true : false });
             foreach (var byF in byFroms)
             {

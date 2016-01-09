@@ -37,6 +37,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TraceSerializationPlayground;
 using TraceWizard.Data;
 using TraceWizard.Processors;
 using TraceWizard.UI;
@@ -217,12 +218,13 @@ namespace TraceWizard
                 System.GC.Collect();
                 return;
             }
-            sw.Stop();
+            
             traceData = (TraceData)e.Result;
+            UpdateUI();
+            sw.Stop();
 
             MessageBox.Show("Trace file processed in " + sw.Elapsed.TotalSeconds + " seconds.");
-
-            UpdateUI();
+            sw.Reset();
             System.GC.Collect();
         }
 

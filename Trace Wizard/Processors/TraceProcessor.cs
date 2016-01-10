@@ -59,6 +59,8 @@ namespace TraceWizard.Processors
             {
                 proc.ProcessorInit(Data);
             }
+            long reportIncrement = (long)(lineCount * .01);
+            long linesUntilReport = (long)(lineCount * .01);
             long lineNumber = 0;
             using (StreamReader sr = new StreamReader(_file))
             {
@@ -72,9 +74,11 @@ namespace TraceWizard.Processors
                     }
                     string line = sr.ReadLine();
                     lineNumber++;
-                    if (this.WorkerReportsProgress)
+                    linesUntilReport--;
+                    if (this.WorkerReportsProgress && linesUntilReport == 0)
                     {
                         this.ReportProgress((int)(((double)lineNumber / (double)lineCount) * 100));
+                        linesUntilReport = reportIncrement;
                     }
                     foreach (ITraceProcessor proc in Processors)
                     {

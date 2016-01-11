@@ -1,7 +1,7 @@
-h1. Trace Wizard
+# Trace Wizard
 Peoplesoft TraceSQL File Analyzer
 
-h2. Purpose
+## Purpose
 
 Trace Wizard is a Windows Based utility that can assist in making sense of TraceSQL files. 
 

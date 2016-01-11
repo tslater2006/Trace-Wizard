@@ -161,7 +161,7 @@ namespace TraceWizard
                 } else if (call.IsError)
                 {
                     newRoot.BackColor = Color.Red;
-                } else if (call.Duration >= 2)
+                } else if (call.Duration >= Properties.Settings.Default.LongCall)
                 {
                     newRoot.BackColor = Color.LightGreen;
                 }

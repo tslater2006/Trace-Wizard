@@ -148,19 +148,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="icons\Aikawns\A\blue.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="icons\Aikawns\W\blue.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="icons\Aikawns\F\blue.ico" />
-  </ItemGroup>
-  <ItemGroup>
+    <Folder Include="icons\" />
     <Folder Include="Resources\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="icons\Aikawns\A\lg.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

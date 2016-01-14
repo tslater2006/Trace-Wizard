@@ -30,10 +30,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using TraceWizard.Data;
+using TraceWizard.Data.Serialization;
 using TraceWizard.Processors;
 using TraceWizard.UI;
 
@@ -187,28 +189,48 @@ namespace TraceWizard
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Trace Files|*.tracesql";
+            openFileDialog1.Filter = "Trace Files|*.tracesql|Trace Wizard Files|*.twiz";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
+
+            executionTree.Nodes.Clear();
+            sqlListView.Items.Clear();
+            stackTraceListView.Items.Clear();
+            detailsBox.Items.Clear();
+
             if (result == DialogResult.OK)
             {
                 string filename = openFileDialog1.FileName;
                 // Process the file
 
-                executionTree.Nodes.Clear();
-                sqlListView.Items.Clear();
-                stackTraceListView.Items.Clear();
-                detailsBox.Items.Clear();
+                if (TraceDeserializer.IsSerializedData(filename))
+                {
+                    if (TraceDeserializer.IsSerializedVersionSupported(filename))
+                    {
+                        sw.Reset();
+                        sw.Start();
+                        traceData = new TraceDeserializer().DeserializeTraceData(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.None));
+                        UpdateUI();
+                        sw.Stop();
 
-                processor = new TraceProcessor(filename);
-                processor.WorkerReportsProgress = true;
-                processor.WorkerSupportsCancellation = true;
+                        MessageBox.Show("Trace data loaded in " + sw.Elapsed.TotalSeconds + " seconds.");
+                        sw.Reset();
+                    } else
+                    {
+                        MessageBox.Show("This version of Trace Wizard cannot import the serialized data, maybe it was serialized with an older version.");
+                    }
+                } else
+                {
+                    processor = new TraceProcessor(filename);
+                    processor.WorkerReportsProgress = true;
+                    processor.WorkerSupportsCancellation = true;
 
-                processor.ProgressChanged += Processor_ProgressChanged;
-                processor.RunWorkerCompleted += Processor_RunWorkerCompleted;
-                sw.Reset();
-                sw.Start();
-                processor.RunWorkerAsync();
+                    processor.ProgressChanged += Processor_ProgressChanged;
+                    processor.RunWorkerCompleted += Processor_RunWorkerCompleted;
+                    sw.Reset();
+                    sw.Start();
+                    processor.RunWorkerAsync();
+                }
             }
         }
 
@@ -956,6 +978,23 @@ namespace TraceWizard
 
             newWindow.Top = this.Top + 75;
             newWindow.Left = this.Left + 75;
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (traceData == null)
+            {
+                return;
+            }
+            saveFileDialog1.FileName = "";
+            var result = saveFileDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                var filename = saveFileDialog1.FileName;
+
+                new TraceSerializer().SerializeTraceData(traceData, new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None));
+                MessageBox.Show("Data saved successfully!");
+            }
         }
     }
 

@@ -32,7 +32,10 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openInNewWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,7 +52,20 @@
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.memoryUsage = new System.Windows.Forms.ToolStripStatusLabel();
             this.memoryUsageTimer = new System.Windows.Forms.Timer(this.components);
-            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.sqlItemContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyResolvedStatementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyStatementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyBindsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.copyStackTraceToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.executionContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyStackTraceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.BottomToolStripPanel = new System.Windows.Forms.ToolStripPanel();
+            this.TopToolStripPanel = new System.Windows.Forms.ToolStripPanel();
+            this.RightToolStripPanel = new System.Windows.Forms.ToolStripPanel();
+            this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
+            this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.mainTabStrip = new System.Windows.Forms.TabControl();
             this.StatsTab = new System.Windows.Forms.TabPage();
@@ -59,24 +75,16 @@
             this.sqlStatementsTab = new System.Windows.Forms.TabPage();
             this.sqlFindBox = new System.Windows.Forms.TextBox();
             this.sqlListView = new System.Windows.Forms.ListView();
-            this.sqlItemContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.copyResolvedStatementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyStatementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyBindsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.copyStackTraceToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.stackTraceTab = new System.Windows.Forms.TabPage();
             this.stackTraceFindBox = new System.Windows.Forms.TextBox();
             this.stackTraceListView = new System.Windows.Forms.ListView();
             this.detailsBox = new System.Windows.Forms.ListBox();
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.executionContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.copyStackTraceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openInNewWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
-            this.toolStripContainer1.ContentPanel.SuspendLayout();
-            this.toolStripContainer1.SuspendLayout();
+            this.sqlItemContextStrip.SuspendLayout();
+            this.executionContextStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -84,9 +92,9 @@
             this.mainTabStrip.SuspendLayout();
             this.executionPathTab.SuspendLayout();
             this.sqlStatementsTab.SuspendLayout();
-            this.sqlItemContextStrip.SuspendLayout();
             this.stackTraceTab.SuspendLayout();
-            this.executionContextStrip.SuspendLayout();
+            this.toolStripContainer1.ContentPanel.SuspendLayout();
+            this.toolStripContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -108,6 +116,8 @@
             this.openToolStripMenuItem,
             this.openInNewWindowToolStripMenuItem,
             this.toolStripSeparator1,
+            this.saveAsToolStripMenuItem,
+            this.toolStripSeparator3,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -122,10 +132,29 @@
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
+            // openInNewWindowToolStripMenuItem
+            // 
+            this.openInNewWindowToolStripMenuItem.Name = "openInNewWindowToolStripMenuItem";
+            this.openInNewWindowToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.openInNewWindowToolStripMenuItem.Text = "Open in New Window";
+            this.openInNewWindowToolStripMenuItem.Click += new System.EventHandler(this.openInNewWindowToolStripMenuItem_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As...";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(187, 6);
             // 
             // exitToolStripMenuItem
             // 
@@ -257,22 +286,105 @@
             this.memoryUsageTimer.Interval = 1000;
             this.memoryUsageTimer.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // toolStripContainer1
+            // sqlItemContextStrip
             // 
-            this.toolStripContainer1.BottomToolStripPanelVisible = false;
+            this.sqlItemContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyResolvedStatementToolStripMenuItem,
+            this.copyStatementToolStripMenuItem,
+            this.copyBindsToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.copyStackTraceToolStripMenuItem1});
+            this.sqlItemContextStrip.Name = "sqlItemContextStrip";
+            this.sqlItemContextStrip.Size = new System.Drawing.Size(210, 98);
+            this.sqlItemContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.sqlItemContextStrip_Opening);
             // 
-            // toolStripContainer1.ContentPanel
+            // copyResolvedStatementToolStripMenuItem
             // 
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1030, 552);
-            this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.toolStripContainer1.LeftToolStripPanelVisible = false;
-            this.toolStripContainer1.Location = new System.Drawing.Point(0, 24);
-            this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.RightToolStripPanelVisible = false;
-            this.toolStripContainer1.Size = new System.Drawing.Size(1030, 577);
-            this.toolStripContainer1.TabIndex = 2;
-            this.toolStripContainer1.Text = "toolStripContainer1";
+            this.copyResolvedStatementToolStripMenuItem.Name = "copyResolvedStatementToolStripMenuItem";
+            this.copyResolvedStatementToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.copyResolvedStatementToolStripMenuItem.Text = "Copy Resolved Statement";
+            this.copyResolvedStatementToolStripMenuItem.Click += new System.EventHandler(this.copyResolvedStatementToolStripMenuItem_Click);
+            // 
+            // copyStatementToolStripMenuItem
+            // 
+            this.copyStatementToolStripMenuItem.Name = "copyStatementToolStripMenuItem";
+            this.copyStatementToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.copyStatementToolStripMenuItem.Text = "Copy Statement";
+            this.copyStatementToolStripMenuItem.Click += new System.EventHandler(this.copyStatementToolStripMenuItem_Click);
+            // 
+            // copyBindsToolStripMenuItem
+            // 
+            this.copyBindsToolStripMenuItem.Name = "copyBindsToolStripMenuItem";
+            this.copyBindsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.copyBindsToolStripMenuItem.Text = "Copy Binds";
+            this.copyBindsToolStripMenuItem.Click += new System.EventHandler(this.copyBindsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(206, 6);
+            // 
+            // copyStackTraceToolStripMenuItem1
+            // 
+            this.copyStackTraceToolStripMenuItem1.Name = "copyStackTraceToolStripMenuItem1";
+            this.copyStackTraceToolStripMenuItem1.Size = new System.Drawing.Size(209, 22);
+            this.copyStackTraceToolStripMenuItem1.Text = "Copy Stack Trace";
+            this.copyStackTraceToolStripMenuItem1.Click += new System.EventHandler(this.copyStackTraceToolStripMenuItem1_Click);
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.Filter = "Trace Wizard Files|*.twiz";
+            // 
+            // executionContextStrip
+            // 
+            this.executionContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyStackTraceToolStripMenuItem});
+            this.executionContextStrip.Name = "executionContextStrip";
+            this.executionContextStrip.Size = new System.Drawing.Size(165, 26);
+            this.executionContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.executionContextStrip_Opening);
+            // 
+            // copyStackTraceToolStripMenuItem
+            // 
+            this.copyStackTraceToolStripMenuItem.Name = "copyStackTraceToolStripMenuItem";
+            this.copyStackTraceToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.copyStackTraceToolStripMenuItem.Text = "Copy Stack Trace";
+            this.copyStackTraceToolStripMenuItem.Click += new System.EventHandler(this.copyStackTraceToolStripMenuItem_Click);
+            // 
+            // BottomToolStripPanel
+            // 
+            this.BottomToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.BottomToolStripPanel.Name = "BottomToolStripPanel";
+            this.BottomToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.BottomToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.BottomToolStripPanel.Size = new System.Drawing.Size(0, 0);
+            // 
+            // TopToolStripPanel
+            // 
+            this.TopToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.TopToolStripPanel.Name = "TopToolStripPanel";
+            this.TopToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.TopToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.TopToolStripPanel.Size = new System.Drawing.Size(0, 0);
+            // 
+            // RightToolStripPanel
+            // 
+            this.RightToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.RightToolStripPanel.Name = "RightToolStripPanel";
+            this.RightToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.RightToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.RightToolStripPanel.Size = new System.Drawing.Size(0, 0);
+            // 
+            // LeftToolStripPanel
+            // 
+            this.LeftToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.LeftToolStripPanel.Name = "LeftToolStripPanel";
+            this.LeftToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.LeftToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.LeftToolStripPanel.Size = new System.Drawing.Size(0, 0);
+            // 
+            // ContentPanel
+            // 
+            this.ContentPanel.Size = new System.Drawing.Size(1030, 552);
             // 
             // splitContainer1
             // 
@@ -393,51 +505,6 @@
             this.sqlListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.sqlFindBox_KeyDown);
             this.sqlListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             // 
-            // sqlItemContextStrip
-            // 
-            this.sqlItemContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyResolvedStatementToolStripMenuItem,
-            this.copyStatementToolStripMenuItem,
-            this.copyBindsToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.copyStackTraceToolStripMenuItem1});
-            this.sqlItemContextStrip.Name = "sqlItemContextStrip";
-            this.sqlItemContextStrip.Size = new System.Drawing.Size(210, 98);
-            this.sqlItemContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.sqlItemContextStrip_Opening);
-            // 
-            // copyResolvedStatementToolStripMenuItem
-            // 
-            this.copyResolvedStatementToolStripMenuItem.Name = "copyResolvedStatementToolStripMenuItem";
-            this.copyResolvedStatementToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.copyResolvedStatementToolStripMenuItem.Text = "Copy Resolved Statement";
-            this.copyResolvedStatementToolStripMenuItem.Click += new System.EventHandler(this.copyResolvedStatementToolStripMenuItem_Click);
-            // 
-            // copyStatementToolStripMenuItem
-            // 
-            this.copyStatementToolStripMenuItem.Name = "copyStatementToolStripMenuItem";
-            this.copyStatementToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.copyStatementToolStripMenuItem.Text = "Copy Statement";
-            this.copyStatementToolStripMenuItem.Click += new System.EventHandler(this.copyStatementToolStripMenuItem_Click);
-            // 
-            // copyBindsToolStripMenuItem
-            // 
-            this.copyBindsToolStripMenuItem.Name = "copyBindsToolStripMenuItem";
-            this.copyBindsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.copyBindsToolStripMenuItem.Text = "Copy Binds";
-            this.copyBindsToolStripMenuItem.Click += new System.EventHandler(this.copyBindsToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(206, 6);
-            // 
-            // copyStackTraceToolStripMenuItem1
-            // 
-            this.copyStackTraceToolStripMenuItem1.Name = "copyStackTraceToolStripMenuItem1";
-            this.copyStackTraceToolStripMenuItem1.Size = new System.Drawing.Size(209, 22);
-            this.copyStackTraceToolStripMenuItem1.Text = "Copy Stack Trace";
-            this.copyStackTraceToolStripMenuItem1.Click += new System.EventHandler(this.copyStackTraceToolStripMenuItem1_Click);
-            // 
             // stackTraceTab
             // 
             this.stackTraceTab.Controls.Add(this.stackTraceFindBox);
@@ -487,31 +554,22 @@
             this.detailsBox.Size = new System.Drawing.Size(1030, 107);
             this.detailsBox.TabIndex = 0;
             // 
-            // saveFileDialog1
+            // toolStripContainer1
             // 
-            this.saveFileDialog1.Filter = "Trace Wizard Files|*.twiz";
+            this.toolStripContainer1.BottomToolStripPanelVisible = false;
             // 
-            // executionContextStrip
+            // toolStripContainer1.ContentPanel
             // 
-            this.executionContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyStackTraceToolStripMenuItem});
-            this.executionContextStrip.Name = "executionContextStrip";
-            this.executionContextStrip.Size = new System.Drawing.Size(165, 26);
-            this.executionContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.executionContextStrip_Opening);
-            // 
-            // copyStackTraceToolStripMenuItem
-            // 
-            this.copyStackTraceToolStripMenuItem.Name = "copyStackTraceToolStripMenuItem";
-            this.copyStackTraceToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.copyStackTraceToolStripMenuItem.Text = "Copy Stack Trace";
-            this.copyStackTraceToolStripMenuItem.Click += new System.EventHandler(this.copyStackTraceToolStripMenuItem_Click);
-            // 
-            // openInNewWindowToolStripMenuItem
-            // 
-            this.openInNewWindowToolStripMenuItem.Name = "openInNewWindowToolStripMenuItem";
-            this.openInNewWindowToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.openInNewWindowToolStripMenuItem.Text = "Open in New Window";
-            this.openInNewWindowToolStripMenuItem.Click += new System.EventHandler(this.openInNewWindowToolStripMenuItem_Click);
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer1);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1030, 552);
+            this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toolStripContainer1.LeftToolStripPanelVisible = false;
+            this.toolStripContainer1.Location = new System.Drawing.Point(0, 24);
+            this.toolStripContainer1.Name = "toolStripContainer1";
+            this.toolStripContainer1.RightToolStripPanelVisible = false;
+            this.toolStripContainer1.Size = new System.Drawing.Size(1030, 577);
+            this.toolStripContainer1.TabIndex = 2;
+            this.toolStripContainer1.Text = "toolStripContainer1";
             // 
             // MainForm
             // 
@@ -531,9 +589,8 @@
             this.menuStrip.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
-            this.toolStripContainer1.ContentPanel.ResumeLayout(false);
-            this.toolStripContainer1.ResumeLayout(false);
-            this.toolStripContainer1.PerformLayout();
+            this.sqlItemContextStrip.ResumeLayout(false);
+            this.executionContextStrip.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -543,10 +600,11 @@
             this.executionPathTab.PerformLayout();
             this.sqlStatementsTab.ResumeLayout(false);
             this.sqlStatementsTab.PerformLayout();
-            this.sqlItemContextStrip.ResumeLayout(false);
             this.stackTraceTab.ResumeLayout(false);
             this.stackTraceTab.PerformLayout();
-            this.executionContextStrip.ResumeLayout(false);
+            this.toolStripContainer1.ContentPanel.ResumeLayout(false);
+            this.toolStripContainer1.ResumeLayout(false);
+            this.toolStripContainer1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -565,24 +623,10 @@
         private System.Windows.Forms.ToolStripProgressBar progressBar;
         private System.Windows.Forms.ToolStripStatusLabel memoryUsage;
         private System.Windows.Forms.Timer memoryUsageTimer;
-        private System.Windows.Forms.ToolStripContainer toolStripContainer1;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.TabControl mainTabStrip;
-        private System.Windows.Forms.TabPage StatsTab;
-        private System.Windows.Forms.TabPage executionPathTab;
-        private System.Windows.Forms.TreeView executionTree;
-        private System.Windows.Forms.TabPage sqlStatementsTab;
-        private System.Windows.Forms.ListBox detailsBox;
-        private System.Windows.Forms.TabPage stackTraceTab;
-        private System.Windows.Forms.ListView stackTraceListView;
-        private System.Windows.Forms.ListView sqlListView;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.TextBox execFindBox;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.TextBox sqlFindBox;
-        private System.Windows.Forms.TextBox stackTraceFindBox;
         private System.Windows.Forms.ContextMenuStrip sqlItemContextStrip;
         private System.Windows.Forms.ToolStripMenuItem copyStatementToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyBindsToolStripMenuItem;
@@ -598,6 +642,28 @@
         private System.Windows.Forms.ToolStripMenuItem byFromClauseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem errorsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openInNewWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripPanel BottomToolStripPanel;
+        private System.Windows.Forms.ToolStripPanel TopToolStripPanel;
+        private System.Windows.Forms.ToolStripPanel RightToolStripPanel;
+        private System.Windows.Forms.ToolStripPanel LeftToolStripPanel;
+        private System.Windows.Forms.ToolStripContentPanel ContentPanel;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.TabControl mainTabStrip;
+        private System.Windows.Forms.TabPage StatsTab;
+        private System.Windows.Forms.TabPage executionPathTab;
+        private System.Windows.Forms.TextBox execFindBox;
+        private System.Windows.Forms.TreeView executionTree;
+        private System.Windows.Forms.TabPage sqlStatementsTab;
+        private System.Windows.Forms.TextBox sqlFindBox;
+        private System.Windows.Forms.ListView sqlListView;
+        private System.Windows.Forms.TabPage stackTraceTab;
+        private System.Windows.Forms.TextBox stackTraceFindBox;
+        private System.Windows.Forms.ListView stackTraceListView;
+        private System.Windows.Forms.ListBox detailsBox;
+        private System.Windows.Forms.ToolStripContainer toolStripContainer1;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog2;
     }
 }
 

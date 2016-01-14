@@ -89,6 +89,8 @@
     <Compile Include="Data\SQLByWhere.cs" />
     <Compile Include="Data\StackTraceEntry.cs" />
     <Compile Include="Data\StatisticItem.cs" />
+    <Compile Include="Data\Serialization\TraceDeserializer.cs" />
+    <Compile Include="Data\Serialization\TraceSerializer.cs" />
     <Compile Include="UI\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>

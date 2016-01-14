@@ -24,9 +24,9 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://tslater2006.github.io/Trace-Wizard/releases/Trace-Wizard/</InstallUrl>
+    <InstallUrl>http://tslater2006.github.io/Trace-Wizard/releases/</InstallUrl>
     <UpdateUrl>http://tslater2006.github.io/Trace-Wizard/releases/Trace-Wizard/</UpdateUrl>
-    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationRevision>4</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>

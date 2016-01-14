@@ -283,41 +283,7 @@ namespace TraceWizard
         {
             progressBar.Width = progressBar.GetCurrentParent().Width - 120;
         }
-
-        private void toolStripAllSQL_Click(object sender, EventArgs e)
-        {
-            mainTabStrip.SelectedTab = sqlStatementsTab;
-
-            UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements);
-            sortAscending = true;
-            sqlListView.ListViewItemSorter = new ListViewItemComparer(0, sortAscending);
-            previousSortColumn = 0;
-
-            currentSQLDisplay = SQLDisplayType.ALL;
-        }
-
-        private void toolStripWhereSQL_Click(object sender, EventArgs e)
-        {
-            mainTabStrip.SelectedTab = sqlStatementsTab;
-            UIBuilder.BuildWhereSQLList(sqlListView, traceData.SQLByWhere);
-
-            sortAscending = true;
-            sqlListView.ListViewItemSorter = new ListViewItemComparer(2, sortAscending);
-            previousSortColumn = 0;
-            currentSQLDisplay = SQLDisplayType.WHERE;
-        }
-
-        private void toolStripSQLByFrom_Click(object sender, EventArgs e)
-        {
-            mainTabStrip.SelectedTab = sqlStatementsTab;
-            UIBuilder.BuildFromSQLList(sqlListView, traceData.SQLByFrom);
-
-            sortAscending = true;
-            sqlListView.ListViewItemSorter = new ListViewItemComparer(2, sortAscending);
-            previousSortColumn = 0;
-            currentSQLDisplay = SQLDisplayType.WHERE;
-        }
-
+        
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (((ListView)sender).SelectedItems.Count > 0)
@@ -437,14 +403,6 @@ namespace TraceWizard
             Application.Exit();
         }
 
-        private void toolStripSQLErrors_Click(object sender, EventArgs e)
-        {
-            mainTabStrip.SelectedTab = sqlStatementsTab;
-            UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements.Where<SQLStatement>(s => s.IsError == true).ToList());
-            previousSortColumn = 0;
-            currentSQLDisplay = SQLDisplayType.ALL;
-        }
-
         private void mainTabStrip_Selected(object sender, TabControlEventArgs e)
         {
             /* ensure we are closing the find box */
@@ -453,7 +411,6 @@ namespace TraceWizard
             if (e.TabPage == executionPathTab)
             {
                 processSearchBoxDisplay(executionTree, execFindBox, new KeyEventArgs(Keys.Escape));
-                sqlToolStrip.Enabled = false;
                 if (_execSearchInProgress)
                 {
                     RestoreExecutionNodes();
@@ -463,7 +420,6 @@ namespace TraceWizard
             }
             else if (e.TabPage == sqlStatementsTab)
             {
-                sqlToolStrip.Enabled = true;
                 processSearchBoxDisplay(sqlListView, sqlFindBox, new KeyEventArgs(Keys.Escape));
 
                 if (_sqlSearchInProgress)
@@ -487,7 +443,6 @@ namespace TraceWizard
             else if (e.TabPage == stackTraceTab)
             {
                 processSearchBoxDisplay(stackTraceListView, stackTraceFindBox, new KeyEventArgs(Keys.Escape));
-                sqlToolStrip.Enabled = false;
                 if (_traceSearchInProgress)
                 {
                     UIBuilder.BuildStackTraceList(stackTraceListView, traceData.StackTraces);
@@ -931,6 +886,59 @@ namespace TraceWizard
                 MessageBox.Show("Stack trace copied successfully.");
             }
         }
+
+        private void SQLView_Clicked(object sender, EventArgs e)
+        {
+            var menu = sender as ToolStripMenuItem;
+            var currentStatus = menu.Checked;
+
+            /* reset all menu's */
+            allToolStripMenuItem.Checked = false;
+            byWhereClauseToolStripMenuItem.Checked = false;
+            byFromClauseToolStripMenuItem.Checked = false;
+            errorsToolStripMenuItem.Checked = false;
+
+            menu.Checked = currentStatus;
+
+
+            if (sender == allToolStripMenuItem)
+            {
+                mainTabStrip.SelectedTab = sqlStatementsTab;
+
+                UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements);
+                sortAscending = true;
+                sqlListView.ListViewItemSorter = new ListViewItemComparer(0, sortAscending);
+                previousSortColumn = 0;
+
+                currentSQLDisplay = SQLDisplayType.ALL;
+            } else if (sender == byWhereClauseToolStripMenuItem)
+            {
+                mainTabStrip.SelectedTab = sqlStatementsTab;
+                UIBuilder.BuildWhereSQLList(sqlListView, traceData.SQLByWhere);
+
+                sortAscending = true;
+                sqlListView.ListViewItemSorter = new ListViewItemComparer(2, sortAscending);
+                previousSortColumn = 0;
+                currentSQLDisplay = SQLDisplayType.WHERE;
+            } else if (sender == byFromClauseToolStripMenuItem)
+            {
+                mainTabStrip.SelectedTab = sqlStatementsTab;
+                UIBuilder.BuildFromSQLList(sqlListView, traceData.SQLByFrom);
+
+                sortAscending = true;
+                sqlListView.ListViewItemSorter = new ListViewItemComparer(2, sortAscending);
+                previousSortColumn = 0;
+                currentSQLDisplay = SQLDisplayType.WHERE;
+
+            } else if (sender == errorsToolStripMenuItem)
+            {
+                mainTabStrip.SelectedTab = sqlStatementsTab;
+                UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements.Where<SQLStatement>(s => s.IsError == true).ToList());
+                previousSortColumn = 0;
+                currentSQLDisplay = SQLDisplayType.ALL;
+            }
+        }
+
     }
 
     enum SQLDisplayType

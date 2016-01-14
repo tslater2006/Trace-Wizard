@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -37,6 +36,12 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sQLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.byWhereClauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.byFromClauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.errorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -64,18 +69,12 @@
             this.stackTraceFindBox = new System.Windows.Forms.TextBox();
             this.stackTraceListView = new System.Windows.Forms.ListView();
             this.detailsBox = new System.Windows.Forms.ListBox();
-            this.sqlToolStrip = new System.Windows.Forms.ToolStrip();
-            this.toolStripAllSQL = new System.Windows.Forms.ToolStripButton();
-            this.toolStripWhereSQL = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSQLByFrom = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSQLErrors = new System.Windows.Forms.ToolStripButton();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.executionContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyStackTraceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
-            this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -86,7 +85,6 @@
             this.sqlStatementsTab.SuspendLayout();
             this.sqlItemContextStrip.SuspendLayout();
             this.stackTraceTab.SuspendLayout();
-            this.sqlToolStrip.SuspendLayout();
             this.executionContextStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -95,6 +93,7 @@
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
+            this.viewToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
@@ -115,19 +114,23 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.openToolStripMenuItem.ShortcutKeyDisplayString = "";
+            this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(109, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(152, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.exitToolStripMenuItem.ShortcutKeyDisplayString = "";
+            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -137,14 +140,69 @@
             this.settingsToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.Text = "&Edit";
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.settingsToolStripMenuItem.Text = "Settings...";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.settingsToolStripMenuItem.Text = "&Settings...";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sQLToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "&View";
+            // 
+            // sQLToolStripMenuItem
+            // 
+            this.sQLToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.allToolStripMenuItem,
+            this.byWhereClauseToolStripMenuItem,
+            this.byFromClauseToolStripMenuItem,
+            this.errorsToolStripMenuItem});
+            this.sQLToolStripMenuItem.Name = "sQLToolStripMenuItem";
+            this.sQLToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sQLToolStripMenuItem.Text = "S&QL";
+            // 
+            // allToolStripMenuItem
+            // 
+            this.allToolStripMenuItem.CheckOnClick = true;
+            this.allToolStripMenuItem.Name = "allToolStripMenuItem";
+            this.allToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.allToolStripMenuItem.Text = "&All";
+            this.allToolStripMenuItem.Click += new System.EventHandler(this.SQLView_Clicked);
+            // 
+            // byWhereClauseToolStripMenuItem
+            // 
+            this.byWhereClauseToolStripMenuItem.CheckOnClick = true;
+            this.byWhereClauseToolStripMenuItem.Name = "byWhereClauseToolStripMenuItem";
+            this.byWhereClauseToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.W)));
+            this.byWhereClauseToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.byWhereClauseToolStripMenuItem.Text = "By &Where Clause";
+            this.byWhereClauseToolStripMenuItem.Click += new System.EventHandler(this.SQLView_Clicked);
+            // 
+            // byFromClauseToolStripMenuItem
+            // 
+            this.byFromClauseToolStripMenuItem.CheckOnClick = true;
+            this.byFromClauseToolStripMenuItem.Name = "byFromClauseToolStripMenuItem";
+            this.byFromClauseToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
+            this.byFromClauseToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.byFromClauseToolStripMenuItem.Text = "By &From Clause";
+            this.byFromClauseToolStripMenuItem.Click += new System.EventHandler(this.SQLView_Clicked);
+            // 
+            // errorsToolStripMenuItem
+            // 
+            this.errorsToolStripMenuItem.CheckOnClick = true;
+            this.errorsToolStripMenuItem.Name = "errorsToolStripMenuItem";
+            this.errorsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this.errorsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.errorsToolStripMenuItem.Text = "&Errors";
+            this.errorsToolStripMenuItem.Click += new System.EventHandler(this.SQLView_Clicked);
             // 
             // helpToolStripMenuItem
             // 
@@ -204,7 +262,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1030, 538);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1030, 552);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.LeftToolStripPanelVisible = false;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 24);
@@ -213,10 +271,6 @@
             this.toolStripContainer1.Size = new System.Drawing.Size(1030, 577);
             this.toolStripContainer1.TabIndex = 2;
             this.toolStripContainer1.Text = "toolStripContainer1";
-            // 
-            // toolStripContainer1.TopToolStripPanel
-            // 
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.sqlToolStrip);
             // 
             // splitContainer1
             // 
@@ -232,8 +286,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.detailsBox);
-            this.splitContainer1.Size = new System.Drawing.Size(1030, 538);
-            this.splitContainer1.SplitterDistance = 430;
+            this.splitContainer1.Size = new System.Drawing.Size(1030, 552);
+            this.splitContainer1.SplitterDistance = 441;
             this.splitContainer1.TabIndex = 3;
             // 
             // mainTabStrip
@@ -246,7 +300,7 @@
             this.mainTabStrip.Location = new System.Drawing.Point(0, 0);
             this.mainTabStrip.Name = "mainTabStrip";
             this.mainTabStrip.SelectedIndex = 0;
-            this.mainTabStrip.Size = new System.Drawing.Size(1030, 430);
+            this.mainTabStrip.Size = new System.Drawing.Size(1030, 441);
             this.mainTabStrip.TabIndex = 3;
             this.mainTabStrip.Selected += new System.Windows.Forms.TabControlEventHandler(this.mainTabStrip_Selected);
             this.mainTabStrip.KeyDown += new System.Windows.Forms.KeyEventHandler(this.mainTabStrip_KeyDown);
@@ -257,7 +311,7 @@
             this.StatsTab.Location = new System.Drawing.Point(4, 22);
             this.StatsTab.Name = "StatsTab";
             this.StatsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.StatsTab.Size = new System.Drawing.Size(1022, 404);
+            this.StatsTab.Size = new System.Drawing.Size(1022, 415);
             this.StatsTab.TabIndex = 0;
             this.StatsTab.Text = "Statistics";
             this.StatsTab.UseVisualStyleBackColor = true;
@@ -269,7 +323,7 @@
             this.executionPathTab.Location = new System.Drawing.Point(4, 22);
             this.executionPathTab.Name = "executionPathTab";
             this.executionPathTab.Padding = new System.Windows.Forms.Padding(3);
-            this.executionPathTab.Size = new System.Drawing.Size(1022, 404);
+            this.executionPathTab.Size = new System.Drawing.Size(1022, 415);
             this.executionPathTab.TabIndex = 1;
             this.executionPathTab.Text = "Execution Path";
             this.executionPathTab.UseVisualStyleBackColor = true;
@@ -277,7 +331,7 @@
             // execFindBox
             // 
             this.execFindBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.execFindBox.Location = new System.Drawing.Point(3, 381);
+            this.execFindBox.Location = new System.Drawing.Point(3, 392);
             this.execFindBox.Name = "execFindBox";
             this.execFindBox.Size = new System.Drawing.Size(1016, 20);
             this.execFindBox.TabIndex = 2;
@@ -290,7 +344,7 @@
             this.executionTree.HideSelection = false;
             this.executionTree.Location = new System.Drawing.Point(3, 3);
             this.executionTree.Name = "executionTree";
-            this.executionTree.Size = new System.Drawing.Size(1016, 398);
+            this.executionTree.Size = new System.Drawing.Size(1016, 409);
             this.executionTree.TabIndex = 1;
             this.executionTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.executionTree_NodeMouseClick);
             this.executionTree.KeyDown += new System.Windows.Forms.KeyEventHandler(this.executionSearchKeyDown);
@@ -302,7 +356,7 @@
             this.sqlStatementsTab.Location = new System.Drawing.Point(4, 22);
             this.sqlStatementsTab.Name = "sqlStatementsTab";
             this.sqlStatementsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.sqlStatementsTab.Size = new System.Drawing.Size(1022, 404);
+            this.sqlStatementsTab.Size = new System.Drawing.Size(1022, 415);
             this.sqlStatementsTab.TabIndex = 2;
             this.sqlStatementsTab.Text = "SQL Statements";
             this.sqlStatementsTab.UseVisualStyleBackColor = true;
@@ -310,7 +364,7 @@
             // sqlFindBox
             // 
             this.sqlFindBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.sqlFindBox.Location = new System.Drawing.Point(3, 381);
+            this.sqlFindBox.Location = new System.Drawing.Point(3, 392);
             this.sqlFindBox.Name = "sqlFindBox";
             this.sqlFindBox.Size = new System.Drawing.Size(1016, 20);
             this.sqlFindBox.TabIndex = 3;
@@ -328,7 +382,7 @@
             this.sqlListView.Location = new System.Drawing.Point(3, 3);
             this.sqlListView.MultiSelect = false;
             this.sqlListView.Name = "sqlListView";
-            this.sqlListView.Size = new System.Drawing.Size(1016, 398);
+            this.sqlListView.Size = new System.Drawing.Size(1016, 409);
             this.sqlListView.TabIndex = 0;
             this.sqlListView.UseCompatibleStateImageBehavior = false;
             this.sqlListView.View = System.Windows.Forms.View.Details;
@@ -389,7 +443,7 @@
             this.stackTraceTab.Location = new System.Drawing.Point(4, 22);
             this.stackTraceTab.Name = "stackTraceTab";
             this.stackTraceTab.Padding = new System.Windows.Forms.Padding(3);
-            this.stackTraceTab.Size = new System.Drawing.Size(1022, 404);
+            this.stackTraceTab.Size = new System.Drawing.Size(1022, 415);
             this.stackTraceTab.TabIndex = 3;
             this.stackTraceTab.Text = "Stack Traces";
             this.stackTraceTab.UseVisualStyleBackColor = true;
@@ -397,7 +451,7 @@
             // stackTraceFindBox
             // 
             this.stackTraceFindBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.stackTraceFindBox.Location = new System.Drawing.Point(3, 381);
+            this.stackTraceFindBox.Location = new System.Drawing.Point(3, 392);
             this.stackTraceFindBox.Name = "stackTraceFindBox";
             this.stackTraceFindBox.Size = new System.Drawing.Size(1016, 20);
             this.stackTraceFindBox.TabIndex = 4;
@@ -413,7 +467,7 @@
             this.stackTraceListView.Location = new System.Drawing.Point(3, 3);
             this.stackTraceListView.MultiSelect = false;
             this.stackTraceListView.Name = "stackTraceListView";
-            this.stackTraceListView.Size = new System.Drawing.Size(1016, 398);
+            this.stackTraceListView.Size = new System.Drawing.Size(1016, 409);
             this.stackTraceListView.TabIndex = 1;
             this.stackTraceListView.UseCompatibleStateImageBehavior = false;
             this.stackTraceListView.View = System.Windows.Forms.View.Details;
@@ -428,69 +482,8 @@
             this.detailsBox.HorizontalScrollbar = true;
             this.detailsBox.Location = new System.Drawing.Point(0, 0);
             this.detailsBox.Name = "detailsBox";
-            this.detailsBox.Size = new System.Drawing.Size(1030, 104);
+            this.detailsBox.Size = new System.Drawing.Size(1030, 107);
             this.detailsBox.TabIndex = 0;
-            // 
-            // sqlToolStrip
-            // 
-            this.sqlToolStrip.Dock = System.Windows.Forms.DockStyle.None;
-            this.sqlToolStrip.Enabled = false;
-            this.sqlToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.sqlToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripAllSQL,
-            this.toolStripWhereSQL,
-            this.toolStripSQLByFrom,
-            this.toolStripSQLErrors});
-            this.sqlToolStrip.Location = new System.Drawing.Point(3, 0);
-            this.sqlToolStrip.Name = "sqlToolStrip";
-            this.sqlToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.sqlToolStrip.Size = new System.Drawing.Size(148, 39);
-            this.sqlToolStrip.TabIndex = 0;
-            // 
-            // toolStripAllSQL
-            // 
-            this.toolStripAllSQL.CheckOnClick = true;
-            this.toolStripAllSQL.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripAllSQL.Image = ((System.Drawing.Image)(resources.GetObject("toolStripAllSQL.Image")));
-            this.toolStripAllSQL.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.toolStripAllSQL.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripAllSQL.Name = "toolStripAllSQL";
-            this.toolStripAllSQL.Size = new System.Drawing.Size(36, 36);
-            this.toolStripAllSQL.Text = "Show All SQL";
-            this.toolStripAllSQL.Click += new System.EventHandler(this.toolStripAllSQL_Click);
-            // 
-            // toolStripWhereSQL
-            // 
-            this.toolStripWhereSQL.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripWhereSQL.Image = ((System.Drawing.Image)(resources.GetObject("toolStripWhereSQL.Image")));
-            this.toolStripWhereSQL.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.toolStripWhereSQL.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripWhereSQL.Name = "toolStripWhereSQL";
-            this.toolStripWhereSQL.Size = new System.Drawing.Size(37, 36);
-            this.toolStripWhereSQL.Text = "Show SQL By Where Clause";
-            this.toolStripWhereSQL.Click += new System.EventHandler(this.toolStripWhereSQL_Click);
-            // 
-            // toolStripSQLByFrom
-            // 
-            this.toolStripSQLByFrom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripSQLByFrom.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSQLByFrom.Image")));
-            this.toolStripSQLByFrom.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.toolStripSQLByFrom.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripSQLByFrom.Name = "toolStripSQLByFrom";
-            this.toolStripSQLByFrom.Size = new System.Drawing.Size(36, 36);
-            this.toolStripSQLByFrom.Text = "Show SQL By From Clause";
-            this.toolStripSQLByFrom.Click += new System.EventHandler(this.toolStripSQLByFrom_Click);
-            // 
-            // toolStripSQLErrors
-            // 
-            this.toolStripSQLErrors.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripSQLErrors.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSQLErrors.Image")));
-            this.toolStripSQLErrors.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.toolStripSQLErrors.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripSQLErrors.Name = "toolStripSQLErrors";
-            this.toolStripSQLErrors.Size = new System.Drawing.Size(36, 36);
-            this.toolStripSQLErrors.Text = "Only Show SQL Errors";
-            this.toolStripSQLErrors.Click += new System.EventHandler(this.toolStripSQLErrors_Click);
             // 
             // saveFileDialog1
             // 
@@ -530,8 +523,6 @@
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
-            this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
-            this.toolStripContainer1.TopToolStripPanel.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -546,8 +537,6 @@
             this.sqlItemContextStrip.ResumeLayout(false);
             this.stackTraceTab.ResumeLayout(false);
             this.stackTraceTab.PerformLayout();
-            this.sqlToolStrip.ResumeLayout(false);
-            this.sqlToolStrip.PerformLayout();
             this.executionContextStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -574,14 +563,9 @@
         private System.Windows.Forms.TabPage executionPathTab;
         private System.Windows.Forms.TreeView executionTree;
         private System.Windows.Forms.TabPage sqlStatementsTab;
-        private System.Windows.Forms.ToolStrip sqlToolStrip;
-        private System.Windows.Forms.ToolStripButton toolStripAllSQL;
-        private System.Windows.Forms.ToolStripButton toolStripWhereSQL;
-        private System.Windows.Forms.ToolStripButton toolStripSQLByFrom;
         private System.Windows.Forms.ListBox detailsBox;
         private System.Windows.Forms.TabPage stackTraceTab;
         private System.Windows.Forms.ListView stackTraceListView;
-        private System.Windows.Forms.ToolStripButton toolStripSQLErrors;
         private System.Windows.Forms.ListView sqlListView;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
@@ -598,6 +582,12 @@
         private System.Windows.Forms.ToolStripMenuItem copyStackTraceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyStackTraceToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sQLToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem byWhereClauseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem byFromClauseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem errorsToolStripMenuItem;
     }
 }
 

@@ -148,7 +148,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="icons\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>

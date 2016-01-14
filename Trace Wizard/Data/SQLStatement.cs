@@ -119,12 +119,12 @@ namespace TraceWizard.Data
             {
                 WhereClause = "";
             }
-            
+             
         }
 
         private void ParseFromClause()
         {
-            Regex fromClause = new Regex("(FROM|UPDATE) (.*?) (SET|WHERE|ORDER|$)",RegexOptions.IgnoreCase);
+            Regex fromClause = new Regex("(FROM|UPDATE)\\s*(.*?)\\s*(SET|WHERE|ORDER|$)",RegexOptions.IgnoreCase);
             FromClause = fromClause.Match(Statement).Groups[2].Value.Trim();
         }
 

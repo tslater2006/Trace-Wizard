@@ -49,6 +49,15 @@ namespace TraceWizard
                 executionTree.SelectedNode = executionTree.GetNodeAt(args.X, args.Y);
 
         }
+
+        public MainForm(bool shouldOpenFile) : this()
+        {
+            if (shouldOpenFile)
+            {
+                openToolStripMenuItem_Click(openToolStripMenuItem, new EventArgs());
+            }
+        }
+
         int previousSortColumn = 0;
         bool sortAscending = true;
         TraceData traceData;
@@ -939,6 +948,15 @@ namespace TraceWizard
             }
         }
 
+        private void openInNewWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var newWindow = new MainForm(true);
+            
+            newWindow.Show();
+
+            newWindow.Top = this.Top + 75;
+            newWindow.Left = this.Left + 75;
+        }
     }
 
     enum SQLDisplayType

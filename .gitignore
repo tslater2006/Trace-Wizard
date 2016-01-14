@@ -213,3 +213,6 @@ ModelManifest.xml
 
 #Trace Files Directory
 Traces/
+
+#deploy folder
+deploy/

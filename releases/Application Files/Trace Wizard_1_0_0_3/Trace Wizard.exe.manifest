@@ -3,7 +3,7 @@
   <asmv1:assemblyIdentity name="Trace Wizard.exe" version="1.0.0.3" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="Trace Wizard" version="1.0.5857.23438" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="Trace Wizard" version="1.0.5857.23608" language="neutral" processorArchitecture="msil" />
     <commandLine file="Trace Wizard.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -43,13 +43,13 @@
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Trace Wizard.exe" size="70144">
-      <assemblyIdentity name="Trace Wizard" version="1.0.5857.23438" language="neutral" processorArchitecture="msil" />
+      <assemblyIdentity name="Trace Wizard" version="1.0.5857.23608" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>D+F5FE2/8aSiZLy/bisAK1SJkJ0maGFlgTrRjufIqco=</dsig:DigestValue>
+        <dsig:DigestValue>x0LwJ1DmVtR7CCvSxnfY8zKkUqVJYUAgnJkgJFPwLyE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

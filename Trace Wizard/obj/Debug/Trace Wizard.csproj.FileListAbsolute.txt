@@ -1,0 +1,16 @@
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\bin\Debug\Trace Wizard.exe.config
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\Trace Wizard.csprojResolveAssemblyReference.cache
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\TraceWizard.AboutBox.resources
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\TraceWizard.MainForm.resources
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\TraceWizard.Properties.Resources.resources
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\TraceWizard.UI.SettingsForm.resources
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\TraceWizard.UI.SQLViewer.resources
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\Trace Wizard.csproj.GenerateResource.Cache
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\Trace Wizard.exe
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\Trace Wizard.pdb
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\bin\Debug\Trace Wizard.exe.manifest
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\bin\Debug\Trace Wizard.application
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\bin\Debug\Trace Wizard.exe
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\bin\Debug\Trace Wizard.pdb
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\Trace Wizard.exe.manifest
+C:\Users\tslat\Documents\GitHub\Trace-Wizard\Trace Wizard\obj\Debug\Trace Wizard.application

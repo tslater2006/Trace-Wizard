@@ -460,6 +460,7 @@
             this.executionTree.Name = "executionTree";
             this.executionTree.Size = new System.Drawing.Size(1016, 409);
             this.executionTree.TabIndex = 1;
+            this.executionTree.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.executionTree_BeforeExpand);
             this.executionTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.executionTree_NodeMouseClick);
             this.executionTree.KeyDown += new System.Windows.Forms.KeyEventHandler(this.executionSearchKeyDown);
             // 

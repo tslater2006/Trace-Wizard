@@ -22,6 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
+//TODO: Search Exec is SLOW on Mono
+//TODO: Fix the code for navigating to a stacktrace, because TreeView is lazyloaded the node may not exist yet.
 
 using System;
 using System.Collections;
@@ -83,7 +85,7 @@ namespace TraceWizard
             {
                 progressBar.Width = progressBar.GetCurrentParent().Width - 120;
             }
-                
+
             progressBar.Minimum = 0;
             progressBar.Maximum = 100;
             progressBar.Value = 0;
@@ -144,7 +146,7 @@ namespace TraceWizard
             if (call.Type == ExecutionCallType.SQL)
             {
                 var sqlItem = call.SQLStatement;
-                switch(sqlItem.Type)
+                switch (sqlItem.Type)
                 {
                     case SQLType.SELECT:
                         newRoot = root.Nodes.Add("SELECT FROM " + sqlItem.FromClause + "Fetched=" + sqlItem.FetchCount + " Dur=" + sqlItem.Duration);
@@ -159,7 +161,7 @@ namespace TraceWizard
                         newRoot = root.Nodes.Add("DELETE FROM " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
                         break;
                 }
-                
+
                 SQLMapToTree.Add(sqlItem, newRoot);
                 newRoot.Tag = sqlItem;
                 if (sqlItem.IsError)
@@ -174,21 +176,19 @@ namespace TraceWizard
                 if (call.HasError)
                 {
                     newRoot.BackColor = Color.Yellow;
-                } else if (call.IsError)
+                }
+                else if (call.IsError)
                 {
                     newRoot.BackColor = Color.Red;
-                } else if (call.Duration >= Properties.Settings.Default.LongCall)
+                }
+                else if (call.Duration >= Properties.Settings.Default.LongCall)
                 {
                     newRoot.BackColor = Color.LightGreen;
                 }
                 newRoot.Tag = call;
+                newRoot.Nodes.Add("Loading...");
             }
-
-
-            foreach (var child in call.Children.OrderBy(p => p.StartLine))
-            {
-                BuildExecutionTree(newRoot, child);
-            }
+            
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -224,11 +224,13 @@ namespace TraceWizard
 
                         MessageBox.Show("Trace data loaded in " + sw.Elapsed.TotalSeconds + " seconds.");
                         sw.Reset();
-                    } else
+                    }
+                    else
                     {
                         MessageBox.Show("This version of Trace Wizard cannot import the serialized data, maybe it was serialized with an older version.");
                     }
-                } else
+                }
+                else
                 {
                     processor = new TraceProcessor(filename);
                     processor.WorkerReportsProgress = true;
@@ -253,7 +255,7 @@ namespace TraceWizard
                 System.GC.Collect();
                 return;
             }
-            
+
             traceData = (TraceData)e.Result;
             UpdateUI();
             sw.Stop();
@@ -326,7 +328,7 @@ namespace TraceWizard
                 progressBar.Width = progressBar.GetCurrentParent().Width - 120;
             }
         }
-        
+
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (((ListView)sender).SelectedItems.Count > 0)
@@ -346,7 +348,8 @@ namespace TraceWizard
                 {
                     ItemExplainer.UpdateExplanation(detailsBox, e.Node.Tag);
                 }
-            } else
+            }
+            else
             {
                 executionContextStrip.Show(sender as Control, e.Location);
             }
@@ -361,19 +364,38 @@ namespace TraceWizard
                 {
                     if (selectedItem.Tag.GetType().Equals(typeof(SQLByFrom)))
                     {
-                        var form = new SQLViewer(this,traceData.SQLStatements, (SQLByFrom)selectedItem.Tag);
+                        var form = new SQLViewer(this, traceData.SQLStatements, (SQLByFrom)selectedItem.Tag);
                         _currentModal = form;
                         form.ShowDialog(this);
                     }
                     if (selectedItem.Tag.GetType().Equals(typeof(SQLByWhere)))
                     {
-                        var form = new SQLViewer(this,traceData.SQLStatements, (SQLByWhere)selectedItem.Tag);
+                        var form = new SQLViewer(this, traceData.SQLStatements, (SQLByWhere)selectedItem.Tag);
                         _currentModal = form;
                         form.ShowDialog(this);
                     }
 
                     if (selectedItem.Tag.GetType().Equals(typeof(SQLStatement)))
                     {
+                        if (Type.GetType("Mono.Runtime") != null)
+                        {
+                            var callDepth = 0;
+                            var sqlStatement = selectedItem.Tag as SQLStatement;
+                            var parent = sqlStatement.ParentCall;
+                            while (parent != null)
+                            {
+                                callDepth++;
+                                parent = parent.Parent;
+                            }
+                            if (callDepth > 10)
+                            {
+                                var result = MessageBox.Show("Due to poor performance of TreeView in Mono, this may take some time (depending on how nested the SQL statement is), would you like to continue?.", "Long operation", MessageBoxButtons.YesNo);
+                                if (result == DialogResult.No)
+                                {
+                                    return;
+                                }
+                            }
+                        }
                         GoToSQLStatementInExecPath((SQLStatement)(selectedItem.Tag));
                     }
                 }
@@ -385,24 +407,61 @@ namespace TraceWizard
         {
             /* switch tabs */
             mainTabStrip.SelectedTab = executionPathTab;
-            
+
             foreach (TreeNode node in executionTree.Nodes)
             {
                 node.Collapse();
             }
-
-            var nodeParent = SQLMapToTree[statement];
-            while (nodeParent != null)
+            if (SQLMapToTree.ContainsKey(statement))
             {
-                nodeParent.Expand();
-                nodeParent = nodeParent.Parent;
+                var nodeParent = SQLMapToTree[statement];
+                while (nodeParent != null)
+                {
+                    nodeParent.Expand();
+                    nodeParent = nodeParent.Parent;
+                }
             }
+            else
+            {
+                // the node doesn't exist on the tree yet, we need to build it out
+                var parent = statement.ParentCall;
+
+                BuildOutTreeForCall(parent);
+
+                /* parent should exist on the tree, start building down */
+            }
+
             if (_currentModal != null)
             {
                 _currentModal.Hide();
             }
             executionTree.SelectedNode = SQLMapToTree[statement];
             executionTree.Focus();
+        }
+
+        private void BuildOutTreeForCall(ExecutionCall call)
+        {
+            Stack<ExecutionCall> parentCalls = new Stack<ExecutionCall>();
+            var parent = call;
+            while (parent != null && ExecCallToTree.ContainsKey(parent) == false)
+            {
+                parentCalls.Push(parent);
+                parent = parent.Parent;
+            }
+
+            /* we need to "expand" this parent to populate it's children */
+            var current = parent;
+            while (parentCalls.Count > 0)
+            {
+                BuildExpandingNode(ExecCallToTree[current], current);
+                ExecCallToTree[current].Parent.Expand();
+
+                current = parentCalls.Pop();
+            }
+
+            BuildExpandingNode(ExecCallToTree[current], current);
+            ExecCallToTree[current].Parent.Expand();
+            ExecCallToTree[current].Expand();
         }
 
         public void GoToStackTraceInExecPath(StackTraceEntry trace)
@@ -450,7 +509,7 @@ namespace TraceWizard
         {
             /* ensure we are closing the find box */
             _findBoxVisible = true;
-            
+
             if (e.TabPage == executionPathTab)
             {
                 processSearchBoxDisplay(executionTree, execFindBox, new KeyEventArgs(Keys.Escape));
@@ -459,7 +518,7 @@ namespace TraceWizard
                     RestoreExecutionNodes();
                     _execSearchInProgress = false;
                 }
-                
+
             }
             else if (e.TabPage == sqlStatementsTab)
             {
@@ -491,9 +550,9 @@ namespace TraceWizard
                     UIBuilder.BuildStackTraceList(stackTraceListView, traceData.StackTraces);
                     _traceSearchInProgress = false;
                 }
-                
+
             }
-            
+
         }
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -527,7 +586,7 @@ namespace TraceWizard
                 }
             }
         }
-        
+
         private void executionSearchKeyDown(object sender, KeyEventArgs e)
         {
             if ((e.Control && e.KeyCode == Keys.F) || (e.KeyCode == Keys.Enter && _findBoxVisible) || (e.KeyCode == Keys.Escape && _findBoxVisible))
@@ -539,7 +598,7 @@ namespace TraceWizard
                     if (e.KeyCode == Keys.Enter)
                     {
                         // time to do the search.
-                        FilterExecutionNodes(executionTree, execFindBox.Text);
+                        SearchExecutionCalls(executionTree, execFindBox.Text);
                         _execSearchInProgress = true;
                     }
                 }
@@ -549,7 +608,7 @@ namespace TraceWizard
                     _execSearchInProgress = false;
                 }
             }
-            
+
         }
 
         private void processSearchBoxDisplay(Control parentControl, TextBox searchBox, KeyEventArgs e)
@@ -592,13 +651,39 @@ namespace TraceWizard
 
         }
 
-        private void FilterExecutionNodes(TreeView tree, string searchText)
+        private void SearchExecutionCalls(TreeView tree, string searchText)
         {
-            if (searchText.Trim().Length == 0)
+            /* ToDo: Alternate search mechanism for mono */
+            if (Type.GetType("Mono.Runtime") != null)
             {
-                BuildExecutionTree();
+                MessageBox.Show("Due to poor performance of TreeView in Mono, search is currently disabled for Execution Path.");
                 return;
             }
+            tree.BeginUpdate();
+            tree.Nodes.Clear();
+            BuildExecutionTree();
+            if (searchText.Trim().Length == 0)
+            {
+                tree.EndUpdate();
+                return;
+            }
+            var searchTextLower = searchText.ToLower();
+
+            var matches = traceData.AllExecutionCalls.Where(c => (c.StartLine + c.Function).ToLower().Contains(searchTextLower)).ToList();
+
+            foreach (ExecutionCall m in matches)
+            {
+                BuildOutTreeForCall(m);
+            }
+
+            FilterExecutionNodes(tree, searchTextLower);
+
+            tree.ExpandAll();
+            tree.EndUpdate();
+        }
+
+        private void FilterExecutionNodes(TreeView tree, string searchText)
+        {
             Stack<TreeNode> toProcess = new Stack<TreeNode>();
             string searchTextLower = searchText.ToLower();
             foreach (TreeNode t in tree.Nodes)
@@ -626,7 +711,8 @@ namespace TraceWizard
                     {
                         current.Parent.Nodes.Remove(current);
                     }
-                } else
+                }
+                else
                 {
                     if (NodeHasChildThatMatches(current, searchTextLower) == false)
                     {
@@ -634,11 +720,13 @@ namespace TraceWizard
                         if (current.Parent == null)
                         {
                             tree.Nodes.Remove(current);
-                        } else
+                        }
+                        else
                         {
                             current.Parent.Nodes.Remove(current);
                         }
-                    } else
+                    }
+                    else
                     {
                         foreach (TreeNode t in current.Nodes)
                         {
@@ -646,9 +734,7 @@ namespace TraceWizard
                         }
                     }
                 }
-                
             }
-            tree.ExpandAll();
         }
 
         private bool NodeHasChildThatMatches(TreeNode node, string searchText)
@@ -673,13 +759,13 @@ namespace TraceWizard
             }
             return _found;
         }
-        
+
 
         private void RestoreExecutionNodes()
         {
             BuildExecutionTree();
         }
-        
+
         private void sqlFindBox_KeyDown(object sender, KeyEventArgs e)
         {
             if ((e.Control && e.KeyCode == Keys.F) || (e.KeyCode == Keys.Enter && _findBoxVisible) || (e.KeyCode == Keys.Escape && _findBoxVisible))
@@ -818,7 +904,7 @@ namespace TraceWizard
 
             foreach (var b in sqlStatement.BindValues)
             {
-                sb.AppendLine(String.Format("Bind {0} = {1}",b.Index,b.Value));
+                sb.AppendLine(String.Format("Bind {0} = {1}", b.Index, b.Value));
             }
             Clipboard.SetText(sb.ToString());
 
@@ -837,7 +923,8 @@ namespace TraceWizard
                 if (b.Type == 19)
                 {
                     valueString = b.Value;
-                } else
+                }
+                else
                 {
                     valueString = "'" + b.Value + "'";
                 }
@@ -896,17 +983,17 @@ namespace TraceWizard
                 MessageBox.Show("Stack trace copied successfully.");
             }
 
-            
 
-            
+
+
         }
 
         private void copyStackTraceToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var sqlStatement = sqlListView.SelectedItems[0].Tag as SQLStatement;
 
-            
-            
+
+
             var item = sqlStatement.ParentCall;
             if (item != null)
             {
@@ -954,7 +1041,8 @@ namespace TraceWizard
                 previousSortColumn = 0;
 
                 currentSQLDisplay = SQLDisplayType.ALL;
-            } else if (sender == byWhereClauseToolStripMenuItem)
+            }
+            else if (sender == byWhereClauseToolStripMenuItem)
             {
                 mainTabStrip.SelectedTab = sqlStatementsTab;
                 UIBuilder.BuildWhereSQLList(sqlListView, traceData.SQLByWhere);
@@ -963,7 +1051,8 @@ namespace TraceWizard
                 sqlListView.ListViewItemSorter = new ListViewItemComparer(2, sortAscending);
                 previousSortColumn = 0;
                 currentSQLDisplay = SQLDisplayType.WHERE;
-            } else if (sender == byFromClauseToolStripMenuItem)
+            }
+            else if (sender == byFromClauseToolStripMenuItem)
             {
                 mainTabStrip.SelectedTab = sqlStatementsTab;
                 UIBuilder.BuildFromSQLList(sqlListView, traceData.SQLByFrom);
@@ -973,7 +1062,8 @@ namespace TraceWizard
                 previousSortColumn = 0;
                 currentSQLDisplay = SQLDisplayType.WHERE;
 
-            } else if (sender == errorsToolStripMenuItem)
+            }
+            else if (sender == errorsToolStripMenuItem)
             {
                 mainTabStrip.SelectedTab = sqlStatementsTab;
                 UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements.Where<SQLStatement>(s => s.IsError == true).ToList());
@@ -985,7 +1075,7 @@ namespace TraceWizard
         private void openInNewWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var newWindow = new MainForm(true);
-            
+
             newWindow.Show();
 
             newWindow.Top = this.Top + 75;
@@ -1008,11 +1098,31 @@ namespace TraceWizard
                 MessageBox.Show("Data saved successfully!");
             }
         }
+
+        private void executionTree_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            var call = e.Node.Tag as ExecutionCall;
+
+            if (e.Node.Nodes.Count == 1 && e.Node.Nodes[0].Text.Equals("Loading..."))
+            {
+                // build out nodes for call
+                BuildExpandingNode(e.Node, call);
+            }
+        }
+
+        private void BuildExpandingNode(TreeNode node, ExecutionCall call)
+        {
+            node.Nodes.Clear();
+            foreach (var child in call.Children)
+            {
+                BuildExecutionTree(node, child);
+            }
+        }
     }
 
     enum SQLDisplayType
     {
-        ALL,WHERE,FROM
+        ALL, WHERE, FROM
     }
 
     class ListViewItemComparer : IComparer
@@ -1043,7 +1153,8 @@ namespace TraceWizard
                 if (ascending)
                 {
                     return number1.CompareTo(number2);
-                } else
+                }
+                else
                 {
                     return number2.CompareTo(number1);
                 }

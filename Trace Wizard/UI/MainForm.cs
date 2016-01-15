@@ -79,7 +79,11 @@ namespace TraceWizard
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            progressBar.Width = progressBar.GetCurrentParent().Width - 120;
+            if (progressBar.GetCurrentParent() != null)
+            {
+                progressBar.Width = progressBar.GetCurrentParent().Width - 120;
+            }
+                
             progressBar.Minimum = 0;
             progressBar.Maximum = 100;
             progressBar.Value = 0;
@@ -105,10 +109,12 @@ namespace TraceWizard
             ExecCallToTree.Clear();
 
             var contextList = execList.OrderBy(p => p.StartLine).Select(p => p.Context).Distinct().ToList();
+            var contextNodeList = new List<TreeNode>();
 
             foreach (var ctx in contextList)
             {
-                var ctxNode = executionTree.Nodes.Add(ctx);
+                var ctxNode = new TreeNode(ctx);
+                contextNodeList.Add(ctxNode);
                 var rootExecCalls = execList.Where(p => p.Context.Equals(ctx)).OrderBy(p => p.StartLine);
                 double contextTotalTime = 0;
                 foreach (var exec in rootExecCalls)
@@ -126,7 +132,10 @@ namespace TraceWizard
                 }
                 ctxNode.Text += " Dur: " + contextTotalTime;
             }
-
+            foreach (var node in contextNodeList)
+            {
+                executionTree.Nodes.Add(node);
+            }
         }
 
         private void BuildExecutionTree(TreeNode root, ExecutionCall call)
@@ -312,7 +321,10 @@ namespace TraceWizard
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            progressBar.Width = progressBar.GetCurrentParent().Width - 120;
+            if (progressBar.GetCurrentParent() != null)
+            {
+                progressBar.Width = progressBar.GetCurrentParent().Width - 120;
+            }
         }
         
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)

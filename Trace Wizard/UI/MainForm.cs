@@ -294,19 +294,35 @@ namespace TraceWizard
             }
 
             BuildExecutionTree();
-            sortAscending = true;
+            sortAscending = true; 
 
-            UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements);
-
+            switch(currentSQLDisplay)
+            {
+                case SQLDisplayType.ALL:
+                    if (errorsToolStripMenuItem.Checked)
+                    {
+                        UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements.Where(s => s.IsError).ToList());
+                    } else
+                    {
+                        UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements);
+                    }
+                    break;
+                case SQLDisplayType.WHERE:
+                    UIBuilder.BuildWhereSQLList(sqlListView, traceData.SQLByWhere);
+                    break;
+                case SQLDisplayType.FROM:
+                    UIBuilder.BuildFromSQLList(sqlListView, traceData.SQLByFrom);
+                    break;
+            }
+            
             UIBuilder.BuildStackTraceList(stackTraceListView, traceData.StackTraces);
 
             var tabPage = UIBuilder.BuildStatisticsPage(traceData.Statistics, handleStatisticDoubleClick);
+            StatsTab.Controls.Clear();
 
             StatsTab.Controls.Add(tabPage);
 
             previousSortColumn = 0;
-
-            currentSQLDisplay = SQLDisplayType.ALL;
 
         }
 
@@ -1120,6 +1136,10 @@ namespace TraceWizard
 
         private void SQLView_Clicked(object sender, EventArgs e)
         {
+            if (traceData == null)
+            {
+                return;
+            }
             var menu = sender as ToolStripMenuItem;
             var currentStatus = menu.Checked;
 

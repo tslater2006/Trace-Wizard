@@ -9,7 +9,7 @@ using TraceWizard.Data;
 
 namespace TraceWizard.Data.Serialization
 {
-    public class TraceSerializer
+    public class TraceSerializer : IDisposable 
     {
         const uint MAGIC = 0x40631374;
         const uint VERSION = 0x01;
@@ -420,6 +420,18 @@ namespace TraceWizard.Data.Serialization
                 ms.Write(strLength, 0, sizeof(int));
             }
             ms.Write(strBytes, 0, strBytes.Length);
+        }
+        protected virtual void Dispose(bool all)
+        {
+            if (all)
+            {
+                ms.Dispose();
+            }
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

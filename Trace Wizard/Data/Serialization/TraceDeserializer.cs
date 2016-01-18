@@ -10,7 +10,7 @@ using TraceWizard.Data;
 
 namespace TraceWizard.Data.Serialization
 {
-    public class TraceDeserializer
+    public class TraceDeserializer : IDisposable
     {
         const uint MAGIC = 0x40631374;
         const uint VERSION = 0x01;
@@ -555,8 +555,21 @@ namespace TraceWizard.Data.Serialization
 
             return System.Text.Encoding.UTF8.GetString(strBytes);
         }
+        protected virtual void Dispose(bool all)
+        {
+            if (all)
+            {
+                ms.Dispose();
+            }
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 
+    [Serializable]
     public class DeSerializationError : Exception
     {
         public DeSerializationError(String msg) : base(msg)

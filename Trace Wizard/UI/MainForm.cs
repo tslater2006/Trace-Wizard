@@ -107,11 +107,6 @@ namespace TraceWizard
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (progressBar.GetCurrentParent() != null)
-            {
-                progressBar.Width = progressBar.GetCurrentParent().Width - 120;
-            }
-
             progressBar.Minimum = 0;
             progressBar.Maximum = 100;
             progressBar.Value = 0;
@@ -1222,6 +1217,14 @@ namespace TraceWizard
             foreach (var child in call.Children)
             {
                 BuildExecutionTree(node, child);
+            }
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            if (progressBar.GetCurrentParent() != null)
+            {
+                progressBar.Width = progressBar.GetCurrentParent().Width - 120;
             }
         }
     }

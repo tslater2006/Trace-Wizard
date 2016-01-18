@@ -55,10 +55,7 @@ namespace TraceWizard
                 executionTree.SelectedNode = executionTree.GetNodeAt(args.X, args.Y);
 
             IsRunningMono = Type.GetType("Mono.Runtime") != null;
-
-            //TODO: Remove this DEBUG statement
-            IsRunningMono = true;
-
+            
             if (IsRunningMono && Properties.Settings.Default.MonoFirstRun)
             {
                 var result = new MonoWarningDialog().ShowDialog(this);

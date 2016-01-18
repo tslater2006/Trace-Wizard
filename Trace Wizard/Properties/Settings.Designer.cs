@@ -34,5 +34,17 @@ namespace TraceWizard.Properties {
                 this["LongCall"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MonoFirstRun {
+            get {
+                return ((bool)(this["MonoFirstRun"]));
+            }
+            set {
+                this["MonoFirstRun"] = value;
+            }
+        }
     }
 }

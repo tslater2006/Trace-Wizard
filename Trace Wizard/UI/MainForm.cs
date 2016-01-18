@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
-//TODO: Search Exec is SLOW on Mono
+
 //TODO: Fix the code for navigating to a stacktrace, because TreeView is lazyloaded the node may not exist yet.
 
 using System;
@@ -45,12 +45,38 @@ namespace TraceWizard
 {
     public partial class MainForm : Form
     {
+        private bool IsRunningMono = false;
+        private bool IsRunningOSX = false;
         public MainForm()
         {
             InitializeComponent();
 
-            executionTree.MouseDown += (sender, args) =>
+            executionTree.MouseDown += (sender, args) => 
                 executionTree.SelectedNode = executionTree.GetNodeAt(args.X, args.Y);
+
+            IsRunningMono = Type.GetType("Mono.Runtime") != null;
+
+            //TODO: Remove this DEBUG statement
+            IsRunningMono = true;
+
+            if (IsRunningMono && Properties.Settings.Default.MonoFirstRun)
+            {
+                var result = new MonoWarningDialog().ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    Properties.Settings.Default.MonoFirstRun = false;
+                    Properties.Settings.Default.Save();
+                }
+            }
+
+            if (IsRunningMono)
+            {
+                /* detect if running OSX for special "Copy" functionality */
+                if (Directory.Exists("/Applications")
+                    && Directory.Exists("/Users")) {
+                    IsRunningOSX = true;
+                }
+            }
 
         }
 
@@ -377,7 +403,7 @@ namespace TraceWizard
 
                     if (selectedItem.Tag.GetType().Equals(typeof(SQLStatement)))
                     {
-                        if (Type.GetType("Mono.Runtime") != null)
+                        if (IsRunningMono)
                         {
                             var callDepth = 0;
                             var sqlStatement = selectedItem.Tag as SQLStatement;
@@ -474,18 +500,32 @@ namespace TraceWizard
                 node.Collapse();
             }
 
-            var nodeParent = ExecCallToTree[trace.Parent];
-            while (nodeParent != null)
+            if (ExecCallToTree.ContainsKey(trace.Parent))
             {
-                nodeParent.Expand();
-                nodeParent = nodeParent.Parent;
+                var nodeParent = ExecCallToTree[trace.Parent];
+                while (nodeParent != null)
+                {
+                    nodeParent.Expand();
+                    nodeParent = nodeParent.Parent;
+                }
             }
+            else
+            {
+                // the node doesn't exist on the tree yet, we need to build it out
+                var parent = trace.Parent;
+
+                BuildOutTreeForCall(parent);
+
+                /* parent should exist on the tree, start building down */
+            }
+
             if (_currentModal != null)
             {
                 _currentModal.Hide();
             }
             executionTree.SelectedNode = ExecCallToTree[trace.Parent];
             executionTree.Focus();
+
         }
 
         private void stackTraceListView_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -493,6 +533,26 @@ namespace TraceWizard
             if (stackTraceListView.SelectedItems.Count > 0)
             {
                 var selectedItem = stackTraceListView.SelectedItems[0];
+                if (IsRunningMono)
+                {
+                    var callDepth = 0;
+                    var sqlStatement = selectedItem.Tag as SQLStatement;
+                    var parent = sqlStatement.ParentCall;
+                    while (parent != null)
+                    {
+                        callDepth++;
+                        parent = parent.Parent;
+                    }
+                    if (callDepth > 10)
+                    {
+                        var result = MessageBox.Show("Due to poor performance of TreeView in Mono, this may take some time (depending on how nested the Stack Trace statement is), would you like to continue?.", "Long operation", MessageBoxButtons.YesNo);
+                        if (result == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+                }
+                
                 if (selectedItem.Tag != null)
                 {
                     GoToStackTraceInExecPath((StackTraceEntry)(selectedItem.Tag));
@@ -589,6 +649,10 @@ namespace TraceWizard
 
         private void executionSearchKeyDown(object sender, KeyEventArgs e)
         {
+            if (IsRunningMono || traceData == null)
+            {
+                return;
+            }
             if ((e.Control && e.KeyCode == Keys.F) || (e.KeyCode == Keys.Enter && _findBoxVisible) || (e.KeyCode == Keys.Escape && _findBoxVisible))
             {
                 processSearchBoxDisplay(executionTree, execFindBox, e);
@@ -768,6 +832,10 @@ namespace TraceWizard
 
         private void sqlFindBox_KeyDown(object sender, KeyEventArgs e)
         {
+            if (traceData == null)
+            {
+                return;
+            }
             if ((e.Control && e.KeyCode == Keys.F) || (e.KeyCode == Keys.Enter && _findBoxVisible) || (e.KeyCode == Keys.Escape && _findBoxVisible))
             {
                 processSearchBoxDisplay(sqlListView, sqlFindBox, e);
@@ -813,6 +881,10 @@ namespace TraceWizard
 
         private void stackTraceListView_KeyDown(object sender, KeyEventArgs e)
         {
+            if (traceData == null)
+            {
+                return;
+            }
             if ((e.Control && e.KeyCode == Keys.F) || (e.KeyCode == Keys.Enter && _findBoxVisible) || (e.KeyCode == Keys.Escape && _findBoxVisible))
             {
                 processSearchBoxDisplay(stackTraceListView, stackTraceFindBox, e);
@@ -891,7 +963,13 @@ namespace TraceWizard
         {
             var sqlStatement = sqlListView.SelectedItems[0].Tag as SQLStatement;
 
-            Clipboard.SetText(sqlStatement.Statement);
+            if (IsRunningOSX)
+            {
+                OSXClipboard.CopyToClipboard(sqlStatement.Statement);
+            } else
+            {
+                Clipboard.SetText(sqlStatement.Statement);
+            }
 
             MessageBox.Show("SQL Statement copied to clipboard.");
         }
@@ -906,7 +984,14 @@ namespace TraceWizard
             {
                 sb.AppendLine(String.Format("Bind {0} = {1}", b.Index, b.Value));
             }
-            Clipboard.SetText(sb.ToString());
+
+            if (IsRunningOSX)
+            {
+                OSXClipboard.CopyToClipboard(sb.ToString());
+            } else
+            {
+                Clipboard.SetText(sb.ToString());
+            }
 
             MessageBox.Show("Bind values copied to clipboard.");
         }
@@ -930,7 +1015,15 @@ namespace TraceWizard
                 }
                 workingStatement = workingStatement.Replace(":" + b.Index, valueString);
             }
-            Clipboard.SetText(workingStatement);
+
+            if (IsRunningOSX)
+            {
+                OSXClipboard.CopyToClipboard(workingStatement);
+            }
+            else
+            {
+                Clipboard.SetText(workingStatement);
+            }
 
             MessageBox.Show("Resolved statement copied to clipboard.");
         }
@@ -979,7 +1072,14 @@ namespace TraceWizard
                     sb.Append(new string(' ', 4 * stackTrace.Count));
                     sb.AppendLine(String.Format("{0}", sqlItem.Statement));
                 }
-                Clipboard.SetText(sb.ToString());
+                if (IsRunningOSX)
+                {
+                    OSXClipboard.CopyToClipboard(sb.ToString());
+                } else
+                {
+                    Clipboard.SetText(sb.ToString());
+                }
+                
                 MessageBox.Show("Stack trace copied successfully.");
             }
 
@@ -1011,7 +1111,13 @@ namespace TraceWizard
                 sb.Append(new string(' ', 4 * stackTrace.Count));
                 sb.AppendLine(String.Format("{0}", sqlStatement.Statement));
 
-                Clipboard.SetText(sb.ToString());
+                if (IsRunningOSX)
+                {
+                    OSXClipboard.CopyToClipboard(sb.ToString());
+                } else
+                {
+                    Clipboard.SetText(sb.ToString());
+                }
 
                 MessageBox.Show("Stack trace copied successfully.");
             }

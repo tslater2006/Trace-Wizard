@@ -1,36 +1,53 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>Trace Wizard by tslater2006</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">Trace Wizard</h1>
-      <h2 class="project-tagline">Peoplesoft TraceSQL Analyzer</h2>
-      <a href="https://github.com/tslater2006/Trace-Wizard" class="btn">View on GitHub</a>
-      <a href="https://github.com/tslater2006/Trace-Wizard/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/tslater2006/Trace-Wizard/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+<html>
 
-    <section class="main-content">
-      <h1>
-<a id="trace-wizard" class="anchor" href="#trace-wizard" aria-hidden="true"><span class="octicon octicon-link"></span></a>Trace Wizard</h1>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Trace Wizard : Peoplesoft TraceSQL Analyzer">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Trace Wizard</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/tslater2006/Trace-Wizard">View on GitHub</a>
+
+          <h1 id="project_title">Trace Wizard</h1>
+          <h2 id="project_tagline">Peoplesoft TraceSQL Analyzer</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/tslater2006/Trace-Wizard/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/tslater2006/Trace-Wizard/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="trace-wizard" class="anchor" href="#trace-wizard" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Trace Wizard</h1>
 
 <p>Peoplesoft TraceSQL File Analyzer</p>
 
 <h2>
-<a id="author" class="anchor" href="#author" aria-hidden="true"><span class="octicon octicon-link"></span></a>Author</h2>
+<a id="author" class="anchor" href="#author" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Author</h2>
 
 <p>Trace Wizard was written by Tim Slater from <a href="http://intrasee.com/">IntraSee</a>. Tim specializes in backend technologies in the Higher Ed and Commercial space helping IntraSee deliver compelling user experiences for PeopleSoft clients. </p>
 
 <h2>
-<a id="purpose" class="anchor" href="#purpose" aria-hidden="true"><span class="octicon octicon-link"></span></a>Purpose</h2>
+<a id="releases" class="anchor" href="#releases" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Releases</h2>
+
+<p>You can get the latest releases of TraceWizard by going to the <a href="https://github.com/tslater2006/Trace-Wizard/releases">Releases Page</a></p>
+
+<h2>
+<a id="purpose" class="anchor" href="#purpose" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Purpose</h2>
 
 <p>Trace Wizard is a Windows Based utility that can assist in making sense of TraceSQL files. </p>
 
@@ -52,12 +69,12 @@
 </ul>
 
 <h2>
-<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
 
 <p>Trace Wizard requires a Windows OS and the .NET Framework (v4.5), it does not current run well under Mono.</p>
 
 <h2>
-<a id="trace-file-settings" class="anchor" href="#trace-file-settings" aria-hidden="true"><span class="octicon octicon-link"></span></a>Trace File Settings</h2>
+<a id="trace-file-settings" class="anchor" href="#trace-file-settings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Trace File Settings</h2>
 
 <p>There are certain trace settings that work best with Trace Wizard.</p>
 
@@ -66,10 +83,10 @@
 <p><img src="images/screenshots/trace_settings.png" alt="Trace Settings"></p>
 
 <h2>
-<a id="execution-path" class="anchor" href="#execution-path" aria-hidden="true"><span class="octicon octicon-link"></span></a>Execution Path</h2>
+<a id="execution-path" class="anchor" href="#execution-path" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Execution Path</h2>
 
 <h3>
-<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h3>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h3>
 
 <p>The Execution Path view allows you to see the various execution calls that occured and what peoplecode functions / sql statements were called and by whom.</p>
 
@@ -78,24 +95,24 @@
 <p>Items in red indiciate that they produced an exception/stack trace/sql error, clicking on them should reveal more information in the bottom panel.</p>
 
 <h3>
-<a id="searching" class="anchor" href="#searching" aria-hidden="true"><span class="octicon octicon-link"></span></a>Searching</h3>
+<a id="searching" class="anchor" href="#searching" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Searching</h3>
 
 <p>The execution path view supports searching for function names/line numbers, you can toggle the search box with Ctrl + F, you can also exit out of search with Escape.</p>
 
 <p><img src="images/screenshots/ExecPath_Search.png" alt="Exec Path Searching"></p>
 
 <h3>
-<a id="performance-monitoring" class="anchor" href="#performance-monitoring" aria-hidden="true"><span class="octicon octicon-link"></span></a>Performance Monitoring</h3>
+<a id="performance-monitoring" class="anchor" href="#performance-monitoring" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Performance Monitoring</h3>
 
 <p>The Execution path is also useful for locating troublesome calls in terms of timing, if a page is slow to load, the proper tracesql and Trace Wizard should make it easy to pinpoint the functions responsible.</p>
 
 <p><img src="images/screenshots/ExecPath_Slow.png" alt="Highlighting slow calls"></p>
 
 <h2>
-<a id="sql-statements" class="anchor" href="#sql-statements" aria-hidden="true"><span class="octicon octicon-link"></span></a>SQL Statements</h2>
+<a id="sql-statements" class="anchor" href="#sql-statements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SQL Statements</h2>
 
 <h3>
-<a id="overview-1" class="anchor" href="#overview-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h3>
+<a id="overview-1" class="anchor" href="#overview-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h3>
 
 <p>The SQL Statements view shows every SQL Statement that was found in the trace file.</p>
 
@@ -104,7 +121,7 @@
 <p><img src="images/screenshots/SQLStatements.png" alt="SQL Statements ALL View"></p>
 
 <h3>
-<a id="all-view" class="anchor" href="#all-view" aria-hidden="true"><span class="octicon octicon-link"></span></a>ALL View</h3>
+<a id="all-view" class="anchor" href="#all-view" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ALL View</h3>
 
 <p>The ALL view is the default view and will show each individual SQL statement. Clicking on a statement will show you additional information about it in the lower pane including:</p>
 
@@ -119,7 +136,7 @@
 </ul>
 
 <h3>
-<a id="where-view" class="anchor" href="#where-view" aria-hidden="true"><span class="octicon octicon-link"></span></a>Where View</h3>
+<a id="where-view" class="anchor" href="#where-view" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Where View</h3>
 
 <p>Directly underneath the File menu, there are 3 buttons labelled A/W/F, clicking on the "A" button will reset the SQL View tab to displaying the ALL view.</p>
 
@@ -136,31 +153,33 @@
 <p>You can also double click on one of these items to be taken to that specific SQL item in the Execution Path.</p>
 
 <h3>
-<a id="from-view" class="anchor" href="#from-view" aria-hidden="true"><span class="octicon octicon-link"></span></a>From View</h3>
+<a id="from-view" class="anchor" href="#from-view" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>From View</h3>
 
 <p>This view is triggered by clicking on the "F" button. It operates basically the same to the WHERE view, except it is grouping by FROM statements instead of WHERE</p>
 
 <p><img src="images/screenshots/SQLFrom.png" alt="SQL From View"></p>
 
 <h3>
-<a id="searching-1" class="anchor" href="#searching-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Searching</h3>
+<a id="searching-1" class="anchor" href="#searching-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Searching</h3>
 
 <p>The SQL Statement views supports searching through the SQL Text/line numbers, you can toggle the search box with Ctrl + F, you can also exit out of search with Escape.</p>
 
 <h2>
-<a id="stack-trace-view" class="anchor" href="#stack-trace-view" aria-hidden="true"><span class="octicon octicon-link"></span></a>Stack Trace View</h2>
+<a id="stack-trace-view" class="anchor" href="#stack-trace-view" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Stack Trace View</h2>
 
 <p>This view will show any stack traces that were found in the trace file, again you can click on these for more information or double click to be taken to the location in the execution path where it occurred.</p>
+      </section>
+    </div>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/tslater2006/Trace-Wizard">Trace Wizard</a> is maintained by <a href="https://github.com/tslater2006">tslater2006</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Trace Wizard maintained by <a href="https://github.com/tslater2006">tslater2006</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
+    </div>
 
-    </section>
-
-            <script type="text/javascript">
+              <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -170,6 +189,7 @@
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
+
 
   </body>
 </html>

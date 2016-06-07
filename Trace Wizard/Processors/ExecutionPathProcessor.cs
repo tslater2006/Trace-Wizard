@@ -226,13 +226,14 @@ namespace TraceWizard.Processors
                 var func = match.Groups[2].Value;
                 var dur = match.Groups[3].Value;
 
-                //var call = executionCalls.Where(p => p.Context.Equals(currentContextString) && p.Nest.Equals(nest) && p.Function.Equals(func) && p.StopLine == 0).First<ExecutionCall>();
                 var call = callChain.Pop();
                 call.StopLine = lineNumber;
                 call.Duration = Double.Parse(dur);
-                if (nest.Equals("00") == false)
+                if (nest.Equals("00") == false && callChain.Count > 0)
                 {
-                    //var parent = executionCalls.Where(p => p.StartLine < call.StartLine && p.StopLine == 0).Last<ExecutionCall>();
+                    /* If we are a nested call, and there are calls on the call chain *
+                     * then we should associate the current call with its parent      *
+                     */
                     var parent = callChain.Peek();
                     parent.Children.Add(call);
                     call.Parent = parent;

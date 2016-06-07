@@ -1148,6 +1148,8 @@ namespace TraceWizard
 
             menu.Checked = currentStatus;
 
+            /* Remove the ListItemViewComparer if one is present */
+            sqlListView.ListViewItemSorter = null;
 
             if (sender == allToolStripMenuItem)
             {

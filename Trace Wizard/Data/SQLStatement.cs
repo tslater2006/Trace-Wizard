@@ -65,6 +65,7 @@ namespace TraceWizard.Data
         
         public int RCNumber;
         public List<SQLBindValue> BindValues = new List<SQLBindValue>();
+        public List<String> Tables = new List<string>();
         public SQLType Type;
 
         
@@ -124,8 +125,37 @@ namespace TraceWizard.Data
 
         private void ParseFromClause()
         {
-            Regex fromClause = new Regex("(FROM|UPDATE)\\s*(.*?)\\s*(SET|WHERE|ORDER|$)",RegexOptions.IgnoreCase);
-            FromClause = fromClause.Match(Statement).Groups[2].Value.Trim();
+            Regex fromRegex = null;
+            switch(Type)
+            {
+                case SQLType.SELECT:
+                    fromRegex = new Regex("FROM\\s*(.*?)\\s*(WHERE|$)", RegexOptions.IgnoreCase);
+                    break;
+                case SQLType.UPDATE:
+                    fromRegex = new Regex("UPDATE\\s*(.*?)\\s*(SET|$)", RegexOptions.IgnoreCase);
+                    break;
+                case SQLType.INSERT:
+                    fromRegex = new Regex("INTO\\s*(.*?)\\s*(VALUES|\\(|$)", RegexOptions.IgnoreCase);
+                    break;
+                case SQLType.DELETE:
+                    fromRegex = new Regex("DELETE FROM\\s*(.*?)\\s*(WHERE|$)", RegexOptions.IgnoreCase);
+                    break;
+            }
+            FromClause = fromRegex.Match(Statement).Groups[1].Value.Trim();
+
+            /* determine tables in the clause */
+            if (Type == SQLType.SELECT)
+            {
+                var parts = FromClause.Split(',');
+                foreach (var part in parts)
+                {
+                    var words = part.Trim().Split(' ');
+                    Tables.Add(words[0]);
+                }
+            } else
+            {
+                Tables.Add(FromClause);
+            }
         }
 
         private void DetermineType()

@@ -129,7 +129,7 @@ namespace TraceWizard.Data
             switch(Type)
             {
                 case SQLType.SELECT:
-                    fromRegex = new Regex("FROM\\s*(.*?)\\s*(WHERE|$)", RegexOptions.IgnoreCase);
+                    fromRegex = new Regex("\\s+FROM\\s*(.*?)\\s*(WHERE|$)", RegexOptions.IgnoreCase);
                     break;
                 case SQLType.UPDATE:
                     fromRegex = new Regex("UPDATE\\s*(.*?)\\s*(SET|$)", RegexOptions.IgnoreCase);

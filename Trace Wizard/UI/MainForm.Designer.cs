@@ -45,6 +45,7 @@
             this.byWhereClauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.byFromClauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -195,7 +196,8 @@
             this.allToolStripMenuItem,
             this.byWhereClauseToolStripMenuItem,
             this.byFromClauseToolStripMenuItem,
-            this.errorsToolStripMenuItem});
+            this.errorsToolStripMenuItem,
+            this.tablesToolStripMenuItem});
             this.sQLToolStripMenuItem.Name = "sQLToolStripMenuItem";
             this.sQLToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.sQLToolStripMenuItem.Text = "S&QL";
@@ -205,7 +207,7 @@
             this.allToolStripMenuItem.CheckOnClick = true;
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
             this.allToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.allToolStripMenuItem.Text = "&All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.SQLView_Clicked);
             // 
@@ -223,7 +225,7 @@
             this.byFromClauseToolStripMenuItem.CheckOnClick = true;
             this.byFromClauseToolStripMenuItem.Name = "byFromClauseToolStripMenuItem";
             this.byFromClauseToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
-            this.byFromClauseToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.byFromClauseToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.byFromClauseToolStripMenuItem.Text = "By &From Clause";
             this.byFromClauseToolStripMenuItem.Click += new System.EventHandler(this.SQLView_Clicked);
             // 
@@ -232,9 +234,17 @@
             this.errorsToolStripMenuItem.CheckOnClick = true;
             this.errorsToolStripMenuItem.Name = "errorsToolStripMenuItem";
             this.errorsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-            this.errorsToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.errorsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.errorsToolStripMenuItem.Text = "&Errors";
             this.errorsToolStripMenuItem.Click += new System.EventHandler(this.SQLView_Clicked);
+            // 
+            // tablesToolStripMenuItem
+            // 
+            this.tablesToolStripMenuItem.Name = "tablesToolStripMenuItem";
+            this.tablesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.T)));
+            this.tablesToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.tablesToolStripMenuItem.Text = "Tables";
+            this.tablesToolStripMenuItem.Click += new System.EventHandler(this.SQLView_Clicked);
             // 
             // helpToolStripMenuItem
             // 
@@ -404,8 +414,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.detailsBox);
-            this.splitContainer1.Size = new System.Drawing.Size(1030, 484);
-            this.splitContainer1.SplitterDistance = 386;
+            this.splitContainer1.Size = new System.Drawing.Size(1030, 472);
+            this.splitContainer1.SplitterDistance = 376;
             this.splitContainer1.TabIndex = 3;
             // 
             // mainTabStrip
@@ -418,7 +428,7 @@
             this.mainTabStrip.Location = new System.Drawing.Point(0, 0);
             this.mainTabStrip.Name = "mainTabStrip";
             this.mainTabStrip.SelectedIndex = 0;
-            this.mainTabStrip.Size = new System.Drawing.Size(1030, 386);
+            this.mainTabStrip.Size = new System.Drawing.Size(1030, 376);
             this.mainTabStrip.TabIndex = 3;
             this.mainTabStrip.Selected += new System.Windows.Forms.TabControlEventHandler(this.mainTabStrip_Selected);
             this.mainTabStrip.KeyDown += new System.Windows.Forms.KeyEventHandler(this.mainTabStrip_KeyDown);
@@ -428,8 +438,8 @@
             // 
             this.StatsTab.Location = new System.Drawing.Point(4, 22);
             this.StatsTab.Name = "StatsTab";
-            this.StatsTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.StatsTab.Size = new System.Drawing.Size(1022, 360);
+            this.StatsTab.Padding = new System.Windows.Forms.Padding(3);
+            this.StatsTab.Size = new System.Drawing.Size(1022, 350);
             this.StatsTab.TabIndex = 0;
             this.StatsTab.Text = "Statistics";
             this.StatsTab.UseVisualStyleBackColor = true;
@@ -440,8 +450,8 @@
             this.executionPathTab.Controls.Add(this.executionTree);
             this.executionPathTab.Location = new System.Drawing.Point(4, 22);
             this.executionPathTab.Name = "executionPathTab";
-            this.executionPathTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.executionPathTab.Size = new System.Drawing.Size(1022, 427);
+            this.executionPathTab.Padding = new System.Windows.Forms.Padding(3);
+            this.executionPathTab.Size = new System.Drawing.Size(1022, 350);
             this.executionPathTab.TabIndex = 1;
             this.executionPathTab.Text = "Execution Path";
             this.executionPathTab.UseVisualStyleBackColor = true;
@@ -449,7 +459,7 @@
             // execFindBox
             // 
             this.execFindBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.execFindBox.Location = new System.Drawing.Point(3, 404);
+            this.execFindBox.Location = new System.Drawing.Point(3, 327);
             this.execFindBox.Name = "execFindBox";
             this.execFindBox.Size = new System.Drawing.Size(1016, 20);
             this.execFindBox.TabIndex = 2;
@@ -462,7 +472,7 @@
             this.executionTree.HideSelection = false;
             this.executionTree.Location = new System.Drawing.Point(3, 3);
             this.executionTree.Name = "executionTree";
-            this.executionTree.Size = new System.Drawing.Size(1016, 421);
+            this.executionTree.Size = new System.Drawing.Size(1016, 344);
             this.executionTree.TabIndex = 1;
             this.executionTree.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.executionTree_BeforeExpand);
             this.executionTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.executionTree_NodeMouseClick);
@@ -474,8 +484,8 @@
             this.sqlStatementsTab.Controls.Add(this.sqlListView);
             this.sqlStatementsTab.Location = new System.Drawing.Point(4, 22);
             this.sqlStatementsTab.Name = "sqlStatementsTab";
-            this.sqlStatementsTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.sqlStatementsTab.Size = new System.Drawing.Size(1022, 427);
+            this.sqlStatementsTab.Padding = new System.Windows.Forms.Padding(3);
+            this.sqlStatementsTab.Size = new System.Drawing.Size(1022, 350);
             this.sqlStatementsTab.TabIndex = 2;
             this.sqlStatementsTab.Text = "SQL Statements";
             this.sqlStatementsTab.UseVisualStyleBackColor = true;
@@ -483,7 +493,7 @@
             // sqlFindBox
             // 
             this.sqlFindBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.sqlFindBox.Location = new System.Drawing.Point(3, 404);
+            this.sqlFindBox.Location = new System.Drawing.Point(3, 327);
             this.sqlFindBox.Name = "sqlFindBox";
             this.sqlFindBox.Size = new System.Drawing.Size(1016, 20);
             this.sqlFindBox.TabIndex = 3;
@@ -501,7 +511,7 @@
             this.sqlListView.Location = new System.Drawing.Point(3, 3);
             this.sqlListView.MultiSelect = false;
             this.sqlListView.Name = "sqlListView";
-            this.sqlListView.Size = new System.Drawing.Size(1016, 421);
+            this.sqlListView.Size = new System.Drawing.Size(1016, 344);
             this.sqlListView.TabIndex = 0;
             this.sqlListView.UseCompatibleStateImageBehavior = false;
             this.sqlListView.View = System.Windows.Forms.View.Details;
@@ -516,8 +526,8 @@
             this.stackTraceTab.Controls.Add(this.stackTraceListView);
             this.stackTraceTab.Location = new System.Drawing.Point(4, 22);
             this.stackTraceTab.Name = "stackTraceTab";
-            this.stackTraceTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.stackTraceTab.Size = new System.Drawing.Size(1022, 427);
+            this.stackTraceTab.Padding = new System.Windows.Forms.Padding(3);
+            this.stackTraceTab.Size = new System.Drawing.Size(1022, 350);
             this.stackTraceTab.TabIndex = 3;
             this.stackTraceTab.Text = "Stack Traces";
             this.stackTraceTab.UseVisualStyleBackColor = true;
@@ -525,7 +535,7 @@
             // stackTraceFindBox
             // 
             this.stackTraceFindBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.stackTraceFindBox.Location = new System.Drawing.Point(3, 404);
+            this.stackTraceFindBox.Location = new System.Drawing.Point(3, 327);
             this.stackTraceFindBox.Name = "stackTraceFindBox";
             this.stackTraceFindBox.Size = new System.Drawing.Size(1016, 20);
             this.stackTraceFindBox.TabIndex = 4;
@@ -541,7 +551,7 @@
             this.stackTraceListView.Location = new System.Drawing.Point(3, 3);
             this.stackTraceListView.MultiSelect = false;
             this.stackTraceListView.Name = "stackTraceListView";
-            this.stackTraceListView.Size = new System.Drawing.Size(1016, 421);
+            this.stackTraceListView.Size = new System.Drawing.Size(1016, 344);
             this.stackTraceListView.TabIndex = 1;
             this.stackTraceListView.UseCompatibleStateImageBehavior = false;
             this.stackTraceListView.View = System.Windows.Forms.View.Details;
@@ -556,7 +566,7 @@
             this.detailsBox.HorizontalScrollbar = true;
             this.detailsBox.Location = new System.Drawing.Point(0, 0);
             this.detailsBox.Name = "detailsBox";
-            this.detailsBox.Size = new System.Drawing.Size(1030, 94);
+            this.detailsBox.Size = new System.Drawing.Size(1030, 92);
             this.detailsBox.TabIndex = 0;
             // 
             // toolStripContainer1
@@ -566,7 +576,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1030, 484);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1030, 472);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.LeftToolStripPanelVisible = false;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 24);
@@ -670,6 +680,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.SaveFileDialog saveFileDialog2;
+        private System.Windows.Forms.ToolStripMenuItem tablesToolStripMenuItem;
     }
 }
 

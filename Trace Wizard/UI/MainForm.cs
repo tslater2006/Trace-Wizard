@@ -1190,6 +1190,13 @@ namespace TraceWizard
                 previousSortColumn = 0;
                 currentSQLDisplay = SQLDisplayType.ALL;
             }
+            else if (sender == tablesToolStripMenuItem)
+            {
+                mainTabStrip.SelectedTab = sqlStatementsTab;
+                UIBuilder.BuildSQLTableList(sqlListView, traceData.SQLStatements);
+                previousSortColumn = 0;
+                currentSQLDisplay = SQLDisplayType.ALL;
+            }
         }
 
         private void openInNewWindowToolStripMenuItem_Click(object sender, EventArgs e)

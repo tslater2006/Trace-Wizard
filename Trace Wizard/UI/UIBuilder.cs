@@ -160,6 +160,93 @@ namespace TraceWizard.UI
             view.EndUpdate();
         }
 
+        public static void BuildSQLTableList(ListView view, List<SQLStatement> statements)
+        {
+            view.BeginUpdate();
+            view.Columns.Clear();
+            view.Items.Clear();
+
+            var typeHeader = view.Columns.Add("SQL Type");
+            var tableHeader = view.Columns.Add("Table(s)");
+            var countHeader = view.Columns.Add("Count");
+
+            List<SQLStatement> selects = new List<SQLStatement>();
+            List<SQLStatement> inserts = new List<SQLStatement>();
+            List<SQLStatement> updates = new List<SQLStatement>();
+            List<SQLStatement> deletes = new List<SQLStatement>();
+
+            foreach(var statement in statements)
+            {
+                switch(statement.Type)
+                {
+                    case SQLType.SELECT:
+                        selects.Add(statement);
+                        break;
+                    case SQLType.INSERT:
+                        inserts.Add(statement);
+                        break;
+                    case SQLType.UPDATE:
+                        updates.Add(statement);
+                        break;
+                    case SQLType.DELETE:
+                        deletes.Add(statement);
+                        break;
+                }
+            }
+
+            var selectGroups = selects.GroupBy(s => string.Join(", ", s.Tables.ToArray()));
+            foreach (var group in selectGroups)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Tag = group;
+                SQLStatement firstSQL = group.First();
+                item.Text = firstSQL.Type.ToString();
+                item.SubItems.Add(string.Join(", ", firstSQL.Tables.ToArray()));
+                item.SubItems.Add(group.Count().ToString());
+                view.Items.Add(item);
+            }
+
+            var insertGroup = inserts.GroupBy(s => string.Join(", ", s.Tables.ToArray()));
+            foreach (var group in insertGroup)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Tag = group;
+                SQLStatement firstSQL = group.First();
+                item.Text = firstSQL.Type.ToString();
+                item.SubItems.Add(string.Join(", ", firstSQL.Tables.ToArray()));
+                item.SubItems.Add(group.Count().ToString());
+                view.Items.Add(item);
+            }
+
+            var updateGroup = updates.GroupBy(s => string.Join(", ", s.Tables.ToArray()));
+            foreach (var group in updateGroup)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Tag = group;
+                SQLStatement firstSQL = group.First();
+                item.Text = firstSQL.Type.ToString();
+                item.SubItems.Add(string.Join(", ", firstSQL.Tables.ToArray()));
+                item.SubItems.Add(group.Count().ToString());
+                view.Items.Add(item);
+            }
+
+            var deleteGroup = deletes.GroupBy(s => string.Join(", ", s.Tables.ToArray()));
+            foreach (var group in deleteGroup)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Tag = group;
+                SQLStatement firstSQL = group.First();
+                item.Text = firstSQL.Type.ToString();
+                item.SubItems.Add(string.Join(", ", firstSQL.Tables.ToArray()));
+                item.SubItems.Add(group.Count().ToString());
+                view.Items.Add(item);
+            }
+            typeHeader.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
+            tableHeader.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            countHeader.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
+            view.EndUpdate();
+        }
+
         public static void BuildFromSQLList(ListView view, List<SQLByFrom> sqls)
         {
             view.BeginUpdate();

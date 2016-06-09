@@ -87,6 +87,7 @@
     <Compile Include="Data\PPCException.cs" />
     <Compile Include="Data\SQLByFrom.cs" />
     <Compile Include="Data\SQLByWhere.cs" />
+    <Compile Include="Data\SQLTable.cs" />
     <Compile Include="Data\StackTraceEntry.cs" />
     <Compile Include="Data\StatisticItem.cs" />
     <Compile Include="Data\Serialization\TraceDeserializer.cs" />

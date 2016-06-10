@@ -34,6 +34,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using TraceWizard.Data;
@@ -47,10 +48,29 @@ namespace TraceWizard
     {
         private bool IsRunningMono = false;
         private bool IsRunningOSX = false;
+        private double Version = 1.2;
+
+        private void CheckForNewVersion()
+        {
+            /*https://github.com/tslater2006/Trace-Wizard/releases/latest*/
+            HttpWebRequest req = WebRequest.CreateHttp("https://github.com/tslater2006/Trace-Wizard/releases/latest");
+            req.AllowAutoRedirect = false;
+            var resp = (HttpWebResponse)req.GetResponse();
+            var latestVersion = double.Parse(resp.Headers["Location"].Split('/').Last());
+            if (latestVersion > Version)
+            {
+                var result = MessageBox.Show($"Version {latestVersion} is available for download on GitHub. Would you like to go there now?", "New Version Available",MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    System.Diagnostics.Process.Start("https://github.com/tslater2006/Trace-Wizard/releases/latest");
+                }
+            }
+        }
+
         public MainForm()
         {
             InitializeComponent();
-
+            CheckForNewVersion();
             executionTree.MouseDown += (sender, args) => 
                 executionTree.SelectedNode = executionTree.GetNodeAt(args.X, args.Y);
 
@@ -69,7 +89,7 @@ namespace TraceWizard
             if (IsRunningMono)
             {
                 /* detect if running OSX for special "Copy" functionality */
-                if (Directory.Exists("/Applications")
+            if (Directory.Exists("/Applications")
                     && Directory.Exists("/Users")) {
                     IsRunningOSX = true;
                 }

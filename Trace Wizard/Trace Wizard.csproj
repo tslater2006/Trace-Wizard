@@ -92,6 +92,7 @@
     <Compile Include="Data\StatisticItem.cs" />
     <Compile Include="Data\Serialization\TraceDeserializer.cs" />
     <Compile Include="Data\Serialization\TraceSerializer.cs" />
+    <Compile Include="PathDiff.cs" />
     <Compile Include="UI\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +102,12 @@
     <Compile Include="Data\ExecutionCall.cs" />
     <Compile Include="Data\SQLStatement.cs" />
     <Compile Include="Data\TraceData.cs" />
+    <Compile Include="UI\CompareDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\CompareDialog.Designer.cs">
+      <DependentUpon>CompareDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ItemExplainer.cs" />
     <Compile Include="UI\MainForm.cs">
       <SubType>Form</SubType>
@@ -139,6 +146,9 @@
     <Compile Include="UI\UIBuilder.cs" />
     <EmbeddedResource Include="UI\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\CompareDialog.resx">
+      <DependentUpon>CompareDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

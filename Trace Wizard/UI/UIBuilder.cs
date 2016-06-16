@@ -24,6 +24,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using TraceWizard.Data;
@@ -315,6 +316,103 @@ namespace TraceWizard.UI
 
             }
             view.EndUpdate();
+
+        }
+
+        public static void BuildExecutionTree(TraceData traceData, TreeView executionTree, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree)
+        {
+            
+            if (traceData == null)
+            {
+                return;
+            }
+            var execList = traceData.ExecutionPath;
+            var sqlList = traceData.SQLStatements;
+
+            executionTree.Nodes.Clear();
+            SQLMapToTree.Clear();
+            ExecCallToTree.Clear();
+
+            var contextList = execList.OrderBy(p => p.StartLine).Select(p => p.Context).Distinct().ToList();
+            var contextNodeList = new List<TreeNode>();
+            double totalTraceTime = 0;
+            foreach (var ctx in contextList)
+            {
+                var ctxNode = new TreeNode(ctx);
+                contextNodeList.Add(ctxNode);
+                var rootExecCalls = execList.Where(p => p.Context.Equals(ctx)).OrderBy(p => p.StartLine);
+                double contextTotalTime = 0;
+                foreach (var exec in rootExecCalls)
+                {
+                    contextTotalTime += exec.Duration;
+                    if (exec.HasError || exec.IsError)
+                    {
+                        ctxNode.BackColor = Color.Yellow;
+                    }
+                    else if (exec.Duration >= Properties.Settings.Default.LongCall)
+                    {
+                        ctxNode.BackColor = Color.LightGreen;
+                    }
+                    UIBuilder.BuildExecutionTree(ctxNode, exec,SQLMapToTree, ExecCallToTree);
+                }
+                ctxNode.Text += " Dur: " + contextTotalTime;
+                totalTraceTime += contextTotalTime;
+            }
+            MessageBox.Show("Total Traced Time: " + totalTraceTime);
+            foreach (var node in contextNodeList)
+            {
+                executionTree.Nodes.Add(node);
+            }
+        }
+
+        public static void BuildExecutionTree(TreeNode root, ExecutionCall call, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree)
+        {
+            TreeNode newRoot = null;
+            if (call.Type == ExecutionCallType.SQL)
+            {
+                var sqlItem = call.SQLStatement;
+                switch (sqlItem.Type)
+                {
+                    case SQLType.SELECT:
+                        newRoot = root.Nodes.Add("SELECT FROM " + sqlItem.FromClause + "Fetched=" + sqlItem.FetchCount + " Dur=" + sqlItem.Duration);
+                        break;
+                    case SQLType.UPDATE:
+                        newRoot = root.Nodes.Add("UPDATE " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
+                        break;
+                    case SQLType.INSERT:
+                        newRoot = root.Nodes.Add("INSERT INTO " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
+                        break;
+                    case SQLType.DELETE:
+                        newRoot = root.Nodes.Add("DELETE FROM " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
+                        break;
+                }
+
+                SQLMapToTree.Add(sqlItem, newRoot);
+                newRoot.Tag = sqlItem;
+                if (sqlItem.IsError)
+                {
+                    newRoot.BackColor = Color.Red;
+                }
+            }
+            else
+            {
+                newRoot = root.Nodes.Add(call.Function + "  Dur: " + (call.Duration));
+                ExecCallToTree.Add(call, newRoot);
+                if (call.HasError)
+                {
+                    newRoot.BackColor = Color.Yellow;
+                }
+                else if (call.IsError)
+                {
+                    newRoot.BackColor = Color.Red;
+                }
+                else if (call.Duration >= Properties.Settings.Default.LongCall)
+                {
+                    newRoot.BackColor = Color.LightGreen;
+                }
+                newRoot.Tag = call;
+                newRoot.Nodes.Add("Loading...");
+            }
 
         }
 

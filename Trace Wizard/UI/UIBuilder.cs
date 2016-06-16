@@ -319,7 +319,7 @@ namespace TraceWizard.UI
 
         }
 
-        public static void BuildExecutionTree(TraceData traceData, TreeView executionTree, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree)
+        public static void BuildExecutionTree(TraceData traceData, TreeView executionTree, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree, bool showLoading = true)
         {
             
             if (traceData == null)
@@ -353,19 +353,18 @@ namespace TraceWizard.UI
                     {
                         ctxNode.BackColor = Color.LightGreen;
                     }
-                    UIBuilder.BuildExecutionTree(ctxNode, exec,SQLMapToTree, ExecCallToTree);
+                    UIBuilder.BuildExecutionTree(ctxNode, exec,SQLMapToTree, ExecCallToTree, showLoading);
                 }
                 ctxNode.Text += " Dur: " + contextTotalTime;
                 totalTraceTime += contextTotalTime;
             }
-            MessageBox.Show("Total Traced Time: " + totalTraceTime);
             foreach (var node in contextNodeList)
             {
                 executionTree.Nodes.Add(node);
             }
         }
 
-        public static void BuildExecutionTree(TreeNode root, ExecutionCall call, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree)
+        public static void BuildExecutionTree(TreeNode root, ExecutionCall call, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree, bool showLoading)
         {
             TreeNode newRoot = null;
             if (call.Type == ExecutionCallType.SQL)
@@ -411,7 +410,10 @@ namespace TraceWizard.UI
                     newRoot.BackColor = Color.LightGreen;
                 }
                 newRoot.Tag = call;
-                newRoot.Nodes.Add("Loading...");
+                if (showLoading)
+                {
+                    newRoot.Nodes.Add("Loading...");
+                }
             }
 
         }

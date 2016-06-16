@@ -1167,7 +1167,7 @@ namespace TraceWizard
             node.Nodes.Clear();
             foreach (var child in call.Children)
             {
-                UIBuilder.BuildExecutionTree(node, child, SQLMapToTree, ExecCallToTree);
+                UIBuilder.BuildExecutionTree(node, child, SQLMapToTree, ExecCallToTree,false);
             }
         }
 
@@ -1181,7 +1181,7 @@ namespace TraceWizard
 
         private void compareTracesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            new CompareDialog(traceData).ShowDialog(this);
         }
     }
 

@@ -85,8 +85,40 @@ namespace TraceWizard.UI
             {
                 // explain Execution Call
                 var exec = (ExecutionCall)item;
-                lines.Add(exec.Function);
 
+                if (exec.Type == ExecutionCallType.SQL)
+                {
+                    // explain SQL statement
+                    var sql = (SQLStatement)exec.SQLStatement;
+                    lines.Add("Line #" + sql.LineNumber);
+                    lines.Add("Statement: " + sql.Statement);
+                    lines.Add(String.Format("Duration: {0}, Execute: {1}, Fetch: {2}.", sql.Duration, sql.ExecTime, sql.FetchTime));
+                    lines.Add("Fetched " + sql.FetchCount + " rows.");
+                    lines.Add("Bind count: " + sql.BindValues.Count);
+                    for (var x = 0; x < sql.BindValues.Count; x++)
+                    {
+                        var index = sql.BindValues[x].Index;
+                        var value = sql.BindValues[x].Value;
+                        var typ = sql.BindValues[x].Type;
+                        var length = sql.BindValues[x].Length;
+
+                        lines.Add(String.Format("Bind #{0} - {1} ({2}) - {3}", index, typ, length, value));
+                    }
+                    lines.Add("Caller: " + (sql.ParentCall == null ? "None" : ("Line #" + sql.ParentCall.StartLine) + " " + sql.ParentCall.Function));
+
+                    /* handle error */
+                    if (sql.IsError)
+                    {
+                        lines.Add("SQL Error:");
+                        lines.Add("    Error Position: " + sql.ErrorInfo.ErrorPosition);
+                        lines.Add("    Return Code: " + sql.ErrorInfo.ReturnCode);
+                        lines.Add("    Message: " + sql.ErrorInfo.Message);
+                    }
+                } else
+                {
+                    lines.Add(exec.Function);
+                }
+                
                 if (exec.HasError)
                 {
                     // alert that somewhere below has an error

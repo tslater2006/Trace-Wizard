@@ -24,6 +24,10 @@ namespace TraceWizard.UI
         Dictionary<SQLStatement, TreeNode> SQLMap = new Dictionary<SQLStatement, TreeNode>();
         Dictionary<ExecutionCall, TreeNode> ExecMap = new Dictionary<ExecutionCall, TreeNode>();
 
+        Dictionary<int, ExecutionCall> leftSelected = new Dictionary<int, ExecutionCall>();
+        Dictionary<int, ExecutionCall> rightSelected = new Dictionary<int, ExecutionCall>();
+
+
         public CompareDialog(TraceData initData)
         {
             InitializeComponent();
@@ -31,6 +35,9 @@ namespace TraceWizard.UI
             if (initData != null)
             {
                 leftData = initData;
+                btnCopyToRight.Enabled = true;
+                btnLeftSelectAll.Enabled = true;
+
                 UIBuilder.BuildExecutionTree(leftData, execTreeLeft, SQLMap, ExecMap, false);
             }
         }
@@ -40,9 +47,13 @@ namespace TraceWizard.UI
             openFileDialog1.Filter = "Trace Files|*.tracesql|Trace Wizard Files|*.twiz";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
-
+            if (result == DialogResult.Cancel)
+            {
+                return;
+            }
+            btnLeftSelectAll.Enabled = false;
             execTreeLeft.Nodes.Clear();
-            
+            leftSelected.Clear();
 
             if (result == DialogResult.OK)
             {
@@ -91,17 +102,30 @@ namespace TraceWizard.UI
 
             UIBuilder.BuildExecutionTree(leftData, execTreeLeft, SQLMap, ExecMap, false);
 
+            btnCopyToRight.Enabled = true;
+            btnLeftSelectAll.Enabled = true;
+            if (leftData != null && rightData != null)
+            {
+                btnCompare.Enabled = true;
+            }
+
             System.GC.Collect();
         }
 
         private void btnOpenRight_Click(object sender, EventArgs e)
         {
+            
             openFileDialog1.Filter = "Trace Files|*.tracesql|Trace Wizard Files|*.twiz";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
+            if (result == DialogResult.Cancel)
+            {
+                return;
+            }
 
-            execTreeLeft.Nodes.Clear();
-
+            execTreeRight.Nodes.Clear();
+            rightSelected.Clear();
+            btnRightSelectAll.Enabled = false;
 
             if (result == DialogResult.OK)
             {
@@ -149,34 +173,111 @@ namespace TraceWizard.UI
             rightData = (TraceData)e.Result;
 
             UIBuilder.BuildExecutionTree(rightData, execTreeRight, SQLMap, ExecMap, false);
+            btnRightSelectAll.Enabled = true;
+            if (leftData != null && rightData != null)
+            {
+                btnCompare.Enabled = true;
+            }
 
             System.GC.Collect();
         }
-
-        private void execTree_BeforeExpand(object sender, TreeViewCancelEventArgs e)
-        {
-            var call = e.Node.Tag as ExecutionCall;
-
-            if (e.Node.Nodes.Count == 1 && e.Node.Nodes[0].Text.Equals("Loading..."))
-            {
-                // build out nodes for call
-                BuildExpandingNode(e.Node, call);
-            }
-        }
-
-        private void BuildExpandingNode(TreeNode node, ExecutionCall call)
-        {
-            node.Nodes.Clear();
-            foreach (var child in call.Children)
-            {
-                UIBuilder.BuildExecutionTree(node, child, SQLMap, ExecMap, false);
-            }
-        }
-
+        
         private void btnCopyToRight_Click(object sender, EventArgs e)
         {
             rightData = leftData;
             UIBuilder.BuildExecutionTree(rightData, execTreeRight, SQLMap, ExecMap, false);
+            btnRightSelectAll.Enabled = true;
+            if (leftData != null && rightData != null)
+            {
+                btnCompare.Enabled = true;
+            }
+        }
+
+        private void execTree_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            var treeView = sender as TreeView;
+            Dictionary<int,ExecutionCall> list = (treeView == execTreeLeft ? leftSelected : rightSelected);
+
+            var node = e.Node;
+
+            if (node.Parent == null)
+            {
+                foreach (TreeNode child in node.Nodes)
+                {
+                    child.Checked = node.Checked;
+                    
+                }
+                /* Context level was clicked */
+            } else
+            {
+                if (node.Checked)
+                {
+                    /* selected */
+                    /* determine index */
+                    var indexInContext = node.Index;
+
+                    var itemsAbove = 0;
+                    var context = node.Parent;
+                    var parentIndex = context.Index;
+
+                    for (var x = 0; x < parentIndex; x++)
+                    {
+                        
+                        itemsAbove += treeView.Nodes[x].Nodes.Count;
+                    }
+
+                    list.Add(itemsAbove + indexInContext, node.Tag as ExecutionCall);
+                } else
+                {
+                    var indexInContext = node.Index;
+
+                    var itemsAbove = 0;
+                    var context = node.Parent;
+                    var parentIndex = context.Index;
+
+                    for (var x = 0; x < parentIndex; x++)
+                    {
+                        itemsAbove += treeView.Nodes[x].Nodes.Count;
+                    }
+                    list.Remove(itemsAbove + indexInContext);
+                }
+            }
+            
+        }
+
+        private void btnCompare_Click(object sender, EventArgs e)
+        {
+            /* Check to make sure items on both sides have been picked */
+            if (leftSelected.Count == 0 || rightSelected.Count == 0)
+            {
+                MessageBox.Show("You must select items on both sides before comparing.");
+                return;
+            }
+
+            /* Generate XML files for left and right */
+            List<ExecutionCall> leftList = leftSelected.OrderBy(p => p.Key).Select(p => p.Value).ToList<ExecutionCall>();
+            List<ExecutionCall> rightList = rightSelected.OrderBy(p => p.Key).Select(p => p.Value).ToList<ExecutionCall>();
+
+            var map = PathDiff.GeneratePathDiff(leftList, rightList);
+
+            new CompareResult(leftList, rightList,map).Show(this);
+
+        }
+
+        private void btnLeftSelectAll_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in execTreeLeft.Nodes)
+            {
+                n.Checked = true;
+            }
+        }
+
+        private void btnRightSelectAll_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in execTreeRight.Nodes)
+            {
+                n.Checked = true;
+            }
         }
     }
 }

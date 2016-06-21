@@ -125,6 +125,7 @@ namespace TraceWizard.Data
         public List<Tuple<long, string>> GetStackTrace()
         {
             List<Tuple<long, string>> trace = new List<Tuple<long, string>>();
+            trace.Add(Tuple.Create<long, string>(StartLine, Function));
             var parent = Parent;
             while (parent != null)
             {
@@ -135,6 +136,16 @@ namespace TraceWizard.Data
             trace.Reverse();
             return trace;
         }
+
+        /* Pieces used when Diffing */
+        public DiffStatus DiffStatus = DiffStatus.SAME;
+
+
+    }
+
+    public enum DiffStatus
+    {
+        SAME,INSERT,DELETE,MODIFIED
     }
 
     public enum ExecutionCallType

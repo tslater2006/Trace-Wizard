@@ -46,8 +46,8 @@ namespace TraceWizard
 {
     public partial class MainForm : Form
     {
-        private bool IsRunningMono = false;
-        private bool IsRunningOSX = false;
+        public static bool IsRunningMono = false;
+        public static bool IsRunningOSX = false;
         private double Version = 1.2;
 
         private void CheckForNewVersion()
@@ -1167,7 +1167,7 @@ namespace TraceWizard
             node.Nodes.Clear();
             foreach (var child in call.Children)
             {
-                UIBuilder.BuildExecutionTree(node, child, SQLMapToTree, ExecCallToTree,false);
+                UIBuilder.BuildExecutionTree(node, child, SQLMapToTree, ExecCallToTree, true);
             }
         }
 

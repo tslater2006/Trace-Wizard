@@ -68,6 +68,10 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DiffPlex, Version=1.2.0.0, Culture=neutral, PublicKeyToken=1d35e91d1bd7bc0f, processorArchitecture=MSIL">
+      <HintPath>..\packages\DiffPlex.1.2.1\lib\portable-net40+sl50+win+wpa81+wp80\DiffPlex.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -92,7 +96,7 @@
     <Compile Include="Data\StatisticItem.cs" />
     <Compile Include="Data\Serialization\TraceDeserializer.cs" />
     <Compile Include="Data\Serialization\TraceSerializer.cs" />
-    <Compile Include="PathDiff.cs" />
+    <Compile Include="Diff\PathDiff.cs" />
     <Compile Include="UI\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +111,12 @@
     </Compile>
     <Compile Include="UI\CompareDialog.Designer.cs">
       <DependentUpon>CompareDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\CompareResult.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\CompareResult.Designer.cs">
+      <DependentUpon>CompareResult.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\ItemExplainer.cs" />
     <Compile Include="UI\MainForm.cs">
@@ -150,6 +160,9 @@
     <EmbeddedResource Include="UI\CompareDialog.resx">
       <DependentUpon>CompareDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\CompareResult.resx">
+      <DependentUpon>CompareResult.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -172,6 +185,7 @@
     <EmbeddedResource Include="UI\SQLViewer.resx">
       <DependentUpon>SQLViewer.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

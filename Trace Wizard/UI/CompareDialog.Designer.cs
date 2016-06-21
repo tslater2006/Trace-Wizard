@@ -37,6 +37,8 @@
             this.btnCopyToRight = new System.Windows.Forms.Button();
             this.btnCompare = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.btnLeftSelectAll = new System.Windows.Forms.Button();
+            this.btnRightSelectAll = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // execTreeLeft
@@ -48,7 +50,7 @@
             this.execTreeLeft.Name = "execTreeLeft";
             this.execTreeLeft.Size = new System.Drawing.Size(330, 344);
             this.execTreeLeft.TabIndex = 2;
-            this.execTreeLeft.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.execTree_BeforeExpand);
+            this.execTreeLeft.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.execTree_AfterCheck);
             // 
             // execTreeRight
             // 
@@ -58,7 +60,7 @@
             this.execTreeRight.Name = "execTreeRight";
             this.execTreeRight.Size = new System.Drawing.Size(330, 344);
             this.execTreeRight.TabIndex = 3;
-            this.execTreeRight.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.execTree_BeforeExpand);
+            this.execTreeRight.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.execTree_AfterCheck);
             // 
             // leftProgress
             // 
@@ -96,6 +98,7 @@
             // 
             // btnCopyToRight
             // 
+            this.btnCopyToRight.Enabled = false;
             this.btnCopyToRight.Location = new System.Drawing.Point(245, 12);
             this.btnCopyToRight.Name = "btnCopyToRight";
             this.btnCopyToRight.Size = new System.Drawing.Size(97, 23);
@@ -113,16 +116,41 @@
             this.btnCompare.TabIndex = 9;
             this.btnCompare.Text = "Compare";
             this.btnCompare.UseVisualStyleBackColor = true;
+            this.btnCompare.Click += new System.EventHandler(this.btnCompare_Click);
             // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // btnLeftSelectAll
+            // 
+            this.btnLeftSelectAll.Enabled = false;
+            this.btnLeftSelectAll.Location = new System.Drawing.Point(93, 12);
+            this.btnLeftSelectAll.Name = "btnLeftSelectAll";
+            this.btnLeftSelectAll.Size = new System.Drawing.Size(75, 23);
+            this.btnLeftSelectAll.TabIndex = 10;
+            this.btnLeftSelectAll.Text = "Select All";
+            this.btnLeftSelectAll.UseVisualStyleBackColor = true;
+            this.btnLeftSelectAll.Click += new System.EventHandler(this.btnLeftSelectAll_Click);
+            // 
+            // btnRightSelectAll
+            // 
+            this.btnRightSelectAll.Enabled = false;
+            this.btnRightSelectAll.Location = new System.Drawing.Point(451, 12);
+            this.btnRightSelectAll.Name = "btnRightSelectAll";
+            this.btnRightSelectAll.Size = new System.Drawing.Size(75, 23);
+            this.btnRightSelectAll.TabIndex = 11;
+            this.btnRightSelectAll.Text = "Select All";
+            this.btnRightSelectAll.UseVisualStyleBackColor = true;
+            this.btnRightSelectAll.Click += new System.EventHandler(this.btnRightSelectAll_Click);
             // 
             // CompareDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(719, 481);
+            this.Controls.Add(this.btnRightSelectAll);
+            this.Controls.Add(this.btnLeftSelectAll);
             this.Controls.Add(this.btnCompare);
             this.Controls.Add(this.btnCopyToRight);
             this.Controls.Add(this.btnOpenRight);
@@ -152,5 +180,7 @@
         private System.Windows.Forms.Button btnCopyToRight;
         private System.Windows.Forms.Button btnCompare;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Button btnLeftSelectAll;
+        private System.Windows.Forms.Button btnRightSelectAll;
     }
 }

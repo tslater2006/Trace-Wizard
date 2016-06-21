@@ -319,7 +319,7 @@ namespace TraceWizard.UI
 
         }
 
-        public static void BuildExecutionTree(TraceData traceData, TreeView executionTree, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree, bool showLoading = true)
+        public static void BuildExecutionTree(TraceData traceData, TreeView executionTree, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree, bool showLoading = true, bool diffMode = false)
         {
             
             if (traceData == null)
@@ -345,15 +345,25 @@ namespace TraceWizard.UI
                 foreach (var exec in rootExecCalls)
                 {
                     contextTotalTime += exec.Duration;
-                    if (exec.HasError || exec.IsError)
+                    if (!diffMode)
                     {
-                        ctxNode.BackColor = Color.Yellow;
-                    }
-                    else if (exec.Duration >= Properties.Settings.Default.LongCall)
+                        if (exec.HasError || exec.IsError)
+                        {
+                            ctxNode.BackColor = Color.Yellow;
+                        }
+                        else if (exec.Duration >= Properties.Settings.Default.LongCall)
+                        {
+                            ctxNode.BackColor = Color.LightGreen;
+                        }
+                    } else
                     {
-                        ctxNode.BackColor = Color.LightGreen;
+                        /* only color yellow in Diff mode if there was a MODIFIED */
+                        if (exec.DiffStatus == DiffStatus.MODIFIED)
+                        {
+                            ctxNode.BackColor = Color.Yellow;
+                        }
                     }
-                    UIBuilder.BuildExecutionTree(ctxNode, exec,SQLMapToTree, ExecCallToTree, showLoading);
+                    UIBuilder.BuildExecutionTree(ctxNode, exec,SQLMapToTree, ExecCallToTree, showLoading,diffMode);
                 }
                 ctxNode.Text += " Dur: " + contextTotalTime;
                 totalTraceTime += contextTotalTime;
@@ -364,7 +374,7 @@ namespace TraceWizard.UI
             }
         }
 
-        public static void BuildExecutionTree(TreeNode root, ExecutionCall call, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree, bool showLoading)
+        public static void BuildExecutionTree(TreeNode root, ExecutionCall call, Dictionary<SQLStatement, TreeNode> SQLMapToTree, Dictionary<ExecutionCall, TreeNode> ExecCallToTree, bool showLoading, bool diffMode = false)
         {
             TreeNode newRoot = null;
             if (call.Type == ExecutionCallType.SQL)
@@ -387,30 +397,65 @@ namespace TraceWizard.UI
                 }
 
                 SQLMapToTree.Add(sqlItem, newRoot);
-                newRoot.Tag = sqlItem;
-                if (sqlItem.IsError)
+                newRoot.Tag = call;
+                if (!diffMode)
                 {
-                    newRoot.BackColor = Color.Red;
+                    if (sqlItem.IsError)
+                    {
+                        newRoot.BackColor = Color.Red;
+                    }
+                } else
+                {
+                    if (call.DiffStatus == DiffStatus.DELETE)
+                    {
+                        newRoot.BackColor = Color.Red;
+                    }
+                    else if (call.DiffStatus == DiffStatus.INSERT)
+                    {
+                        newRoot.BackColor = Color.LightBlue;
+                    } else if (call.DiffStatus == DiffStatus.MODIFIED) 
+                    {
+                        newRoot.BackColor = Color.Yellow;
+                    }
                 }
+                
             }
             else
             {
                 newRoot = root.Nodes.Add(call.Function + "  Dur: " + (call.Duration));
                 ExecCallToTree.Add(call, newRoot);
-                if (call.HasError)
+                if (!diffMode)
                 {
-                    newRoot.BackColor = Color.Yellow;
-                }
-                else if (call.IsError)
+                    if (call.HasError)
+                    {
+                        newRoot.BackColor = Color.Yellow;
+                    }
+                    else if (call.IsError)
+                    {
+                        newRoot.BackColor = Color.Red;
+                    }
+                    else if (call.Duration >= Properties.Settings.Default.LongCall)
+                    {
+                        newRoot.BackColor = Color.LightGreen;
+                    }
+                } else
                 {
-                    newRoot.BackColor = Color.Red;
+                    if (call.DiffStatus == DiffStatus.INSERT)
+                    {
+                        newRoot.BackColor = Color.LightBlue;
+                    }
+                    else if (call.DiffStatus == DiffStatus.DELETE)
+                    {
+                        newRoot.BackColor = Color.Red;
+                    }
+                    else if (call.DiffStatus == DiffStatus.MODIFIED)
+                    {
+                        newRoot.BackColor = Color.Yellow;
+                    }
                 }
-                else if (call.Duration >= Properties.Settings.Default.LongCall)
-                {
-                    newRoot.BackColor = Color.LightGreen;
-                }
+                
                 newRoot.Tag = call;
-                if (showLoading)
+                if (showLoading && call.Children.Count > 0)
                 {
                     newRoot.Nodes.Add("Loading...");
                 }

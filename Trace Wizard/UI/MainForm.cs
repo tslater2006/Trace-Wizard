@@ -141,7 +141,7 @@ namespace TraceWizard
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Trace Files|*.tracesql|Trace Wizard Files|*.twiz";
+            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
 

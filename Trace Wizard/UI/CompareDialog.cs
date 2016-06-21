@@ -44,7 +44,7 @@ namespace TraceWizard.UI
 
         private void btnOpenLeft_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Trace Files|*.tracesql|Trace Wizard Files|*.twiz";
+            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
             if (result == DialogResult.Cancel)
@@ -115,7 +115,7 @@ namespace TraceWizard.UI
         private void btnOpenRight_Click(object sender, EventArgs e)
         {
             
-            openFileDialog1.Filter = "Trace Files|*.tracesql|Trace Wizard Files|*.twiz";
+            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
             if (result == DialogResult.Cancel)

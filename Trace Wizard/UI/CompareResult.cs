@@ -152,6 +152,8 @@ namespace TraceWizard.UI
         {
             if (e.Node.Tag != null)
             {
+                ItemExplainer.UpdateExplanation(itemDetail, e.Node.Tag);
+
                 var call = e.Node.Tag as ExecutionCall;
 
                 if (sameMap.ContainsKey(call))
@@ -181,9 +183,6 @@ namespace TraceWizard.UI
                     /* use Exec Map */
                     otherView.SelectedNode = execMap[call];
                 }
-
-
-                ItemExplainer.UpdateExplanation(itemDetail, e.Node.Tag);
             }
         }
 

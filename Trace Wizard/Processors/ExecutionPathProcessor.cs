@@ -53,6 +53,10 @@ namespace TraceWizard.Processors
         Regex sqlStatement = new Regex("RC=(\\d+) Dur=(\\d+\\.\\d+) COM Stmt=(.*)");
         Regex ppcExceptionStatement = new Regex("ErrorReturn->(.*)");
         Regex parameterStatement = new Regex("\\s+[^=]+\\=\\[^=]*");
+
+        Regex resumeMarker = new Regex(">>> resume\\s+Nest=(\\d+)\\s+(.*)");
+        Regex reendMarker = new Regex(">>> reend\\s+Nest=(\\d+)\\s+(.*)");
+
         public void ProcessorInit(TraceData data)
         {
             executionCalls = data.ExecutionPath;
@@ -200,6 +204,11 @@ namespace TraceWizard.Processors
             }
 
             match = startMarker.Match(line);
+            if (match.Success == false)
+            {
+                match = resumeMarker.Match(line);
+            }
+            /* Start marker, or Resume Marker */
             if (match.Success)
             {
                 _ppcCodeCallCount++;
@@ -221,12 +230,17 @@ namespace TraceWizard.Processors
             }
 
             match = endMarker.Match(line);
+            if (match.Success == false)
+            {
+                match = reendMarker.Match(line);
+            }
+            /* end marker or reend marker */
             if (match.Success)
             {
                 // we've reached the end of a call, we need to find it in the list and mark the ending line
                 var nest = match.Groups[1].Value;
                 var func = match.Groups[2].Value;
-                var dur = match.Groups[3].Value;
+                var dur = match.Groups.Count == 4 ? match.Groups[3].Value : "0";
 
                 bool callFound = false;
                 ExecutionCall call = null;

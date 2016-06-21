@@ -25,6 +25,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TraceWizard.Data;
@@ -174,7 +176,7 @@ namespace TraceWizard.Processors
 
                 if (callChain.Count > 0 && callChain.Peek().Type == ExecutionCallType.CALL)
                 {
-                    while(callChain.Peek().indentCount >= call.indentCount)
+                    while(callChain.Count > 0 && callChain.Peek().indentCount >= call.indentCount)
                     {
                         var popped = callChain.Pop();
                         if (popped.StopLine == 0)
@@ -226,9 +228,20 @@ namespace TraceWizard.Processors
                 var func = match.Groups[2].Value;
                 var dur = match.Groups[3].Value;
 
-                var call = callChain.Pop();
-                call.StopLine = lineNumber;
-                call.Duration = Double.Parse(dur);
+                bool callFound = false;
+                ExecutionCall call = null;
+                while (callFound == false)
+                {
+                    call = callChain.Pop();
+                    if (call.Nest == nest && call.Function == func)
+                    {
+                        callFound = true;
+                        call.StopLine = lineNumber;
+                        call.Duration = Double.Parse(dur);
+                    }
+                    
+                }
+                
                 if (nest.Equals("00") == false && callChain.Count > 0)
                 {
                     /* If we are a nested call, and there are calls on the call chain *

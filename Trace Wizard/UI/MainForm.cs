@@ -46,8 +46,8 @@ namespace TraceWizard
 {
     public partial class MainForm : Form
     {
-        private bool IsRunningMono = false;
-        private bool IsRunningOSX = false;
+        public static bool IsRunningMono = false;
+        public static bool IsRunningOSX = false;
         private double Version = 1.2;
 
         private void CheckForNewVersion()
@@ -111,6 +111,7 @@ namespace TraceWizard
         Stopwatch sw = new Stopwatch();
         SQLDisplayType currentSQLDisplay;
         TraceProcessor processor = null;
+
         Dictionary<SQLStatement, TreeNode> SQLMapToTree = new Dictionary<SQLStatement, TreeNode>();
         Dictionary<ExecutionCall, TreeNode> ExecCallToTree = new Dictionary<ExecutionCall, TreeNode>();
 
@@ -131,102 +132,6 @@ namespace TraceWizard
             var cur = System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64;
 
             memoryUsage.Text = String.Format("Cur: {0}MB", (int)(cur / 1024 / 1024));
-        }
-
-
-        private void BuildExecutionTree()
-        {
-            _execSearchInProgress = false;
-            if (traceData == null)
-            {
-                return;
-            }
-            var execList = traceData.ExecutionPath;
-            var sqlList = traceData.SQLStatements;
-
-            executionTree.Nodes.Clear();
-            SQLMapToTree.Clear();
-            ExecCallToTree.Clear();
-
-            var contextList = execList.OrderBy(p => p.StartLine).Select(p => p.Context).Distinct().ToList();
-            var contextNodeList = new List<TreeNode>();
-
-            foreach (var ctx in contextList)
-            {
-                var ctxNode = new TreeNode(ctx);
-                contextNodeList.Add(ctxNode);
-                var rootExecCalls = execList.Where(p => p.Context.Equals(ctx)).OrderBy(p => p.StartLine);
-                double contextTotalTime = 0;
-                foreach (var exec in rootExecCalls)
-                {
-                    contextTotalTime += exec.Duration;
-                    if (exec.HasError || exec.IsError)
-                    {
-                        ctxNode.BackColor = Color.Yellow;
-                    }
-                    else if (exec.Duration >= Properties.Settings.Default.LongCall)
-                    {
-                        ctxNode.BackColor = Color.LightGreen;
-                    }
-                    BuildExecutionTree(ctxNode, exec);
-                }
-                ctxNode.Text += " Dur: " + contextTotalTime;
-            }
-            foreach (var node in contextNodeList)
-            {
-                executionTree.Nodes.Add(node);
-            }
-        }
-
-        private void BuildExecutionTree(TreeNode root, ExecutionCall call)
-        {
-            TreeNode newRoot = null;
-            if (call.Type == ExecutionCallType.SQL)
-            {
-                var sqlItem = call.SQLStatement;
-                switch (sqlItem.Type)
-                {
-                    case SQLType.SELECT:
-                        newRoot = root.Nodes.Add("SELECT FROM " + sqlItem.FromClause + "Fetched=" + sqlItem.FetchCount + " Dur=" + sqlItem.Duration);
-                        break;
-                    case SQLType.UPDATE:
-                        newRoot = root.Nodes.Add("UPDATE " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
-                        break;
-                    case SQLType.INSERT:
-                        newRoot = root.Nodes.Add("INSERT INTO " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
-                        break;
-                    case SQLType.DELETE:
-                        newRoot = root.Nodes.Add("DELETE FROM " + sqlItem.FromClause + " Dur=" + sqlItem.Duration);
-                        break;
-                }
-
-                SQLMapToTree.Add(sqlItem, newRoot);
-                newRoot.Tag = sqlItem;
-                if (sqlItem.IsError)
-                {
-                    newRoot.BackColor = Color.Red;
-                }
-            }
-            else
-            {
-                newRoot = root.Nodes.Add(call.Function + "  Dur: " + (call.Duration));
-                ExecCallToTree.Add(call, newRoot);
-                if (call.HasError)
-                {
-                    newRoot.BackColor = Color.Yellow;
-                }
-                else if (call.IsError)
-                {
-                    newRoot.BackColor = Color.Red;
-                }
-                else if (call.Duration >= Properties.Settings.Default.LongCall)
-                {
-                    newRoot.BackColor = Color.LightGreen;
-                }
-                newRoot.Tag = call;
-                newRoot.Nodes.Add("Loading...");
-            }
-            
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -305,12 +210,12 @@ namespace TraceWizard
 
         private void UpdateUI()
         {
+            _execSearchInProgress = false;
             if (traceData == null)
             {
                 return;
             }
-
-            BuildExecutionTree();
+            UIBuilder.BuildExecutionTree(traceData, executionTree, SQLMapToTree, ExecCallToTree);
             sortAscending = true; 
 
             switch(currentSQLDisplay)
@@ -753,7 +658,7 @@ namespace TraceWizard
             }
             tree.BeginUpdate();
             tree.Nodes.Clear();
-            BuildExecutionTree();
+            UIBuilder.BuildExecutionTree(traceData, executionTree, SQLMapToTree, ExecCallToTree);
             if (searchText.Trim().Length == 0)
             {
                 tree.EndUpdate();
@@ -855,7 +760,7 @@ namespace TraceWizard
 
         private void RestoreExecutionNodes()
         {
-            BuildExecutionTree();
+            UIBuilder.BuildExecutionTree(traceData, executionTree, SQLMapToTree, ExecCallToTree);
         }
 
         private void sqlFindBox_KeyDown(object sender, KeyEventArgs e)
@@ -1262,7 +1167,7 @@ namespace TraceWizard
             node.Nodes.Clear();
             foreach (var child in call.Children)
             {
-                BuildExecutionTree(node, child);
+                UIBuilder.BuildExecutionTree(node, child, SQLMapToTree, ExecCallToTree, true);
             }
         }
 
@@ -1272,6 +1177,11 @@ namespace TraceWizard
             {
                 progressBar.Width = progressBar.GetCurrentParent().Width - 120;
             }
+        }
+
+        private void compareTracesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new CompareDialog(traceData).ShowDialog(this);
         }
     }
 

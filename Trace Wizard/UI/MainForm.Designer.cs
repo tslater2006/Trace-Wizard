@@ -82,6 +82,8 @@
             this.detailsBox = new System.Windows.Forms.ListBox();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
+            this.compareTracesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.sqlItemContextStrip.SuspendLayout();
@@ -120,6 +122,8 @@
             this.toolStripSeparator1,
             this.saveAsToolStripMenuItem,
             this.toolStripSeparator3,
+            this.compareTracesToolStripMenuItem,
+            this.toolStripSeparator4,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -586,6 +590,18 @@
             this.toolStripContainer1.TabIndex = 2;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
+            // compareTracesToolStripMenuItem
+            // 
+            this.compareTracesToolStripMenuItem.Name = "compareTracesToolStripMenuItem";
+            this.compareTracesToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.compareTracesToolStripMenuItem.Text = "Compare Traces...";
+            this.compareTracesToolStripMenuItem.Click += new System.EventHandler(this.compareTracesToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(187, 6);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -681,6 +697,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.SaveFileDialog saveFileDialog2;
         private System.Windows.Forms.ToolStripMenuItem tablesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem compareTracesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }
 

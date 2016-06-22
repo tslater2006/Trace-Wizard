@@ -96,6 +96,7 @@
     <Compile Include="Data\StatisticItem.cs" />
     <Compile Include="Data\Serialization\TraceDeserializer.cs" />
     <Compile Include="Data\Serialization\TraceSerializer.cs" />
+    <Compile Include="Diff\Diff.cs" />
     <Compile Include="Diff\PathDiff.cs" />
     <Compile Include="UI\AboutBox.cs">
       <SubType>Form</SubType>

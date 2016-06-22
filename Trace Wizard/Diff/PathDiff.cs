@@ -1,6 +1,4 @@
-﻿using DiffPlex;
-using DiffPlex.DiffBuilder;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,27 +32,60 @@ namespace TraceWizard
                 SerializeCall(sbRight, call);
             }
 
-            Differ d = new Differ();
-
-            var inlineDiff = new InlineDiffBuilder(d);
-
             sbLeft.Length -= Environment.NewLine.Length;
             sbRight.Length -= Environment.NewLine.Length;
 
-            var diffModel = inlineDiff.BuildDiffModel(sbLeft.ToString(), sbRight.ToString());
+            var l = sbLeft.ToString();
+            var r = sbRight.ToString();
+            var diff = new Diff.Diff();
+            var items = diff.DiffText(l, r);
+            int pos = 0;
+
+            List<int> diffItems = new List<int>();
+
+            for (var n = 0; n < items.Length; n++)
+            {
+                Diff.Diff.Item i = items[n];
+                while ((pos < i.StartB) && (pos < flatRight.Count))
+                {
+                    diffItems.Add(0);
+                    pos++;
+                }
+                if (i.deletedA > 0)
+                {
+                    for (var m = 0; m < i.deletedA; m++)
+                    {
+                        diffItems.Add(-1);
+                    }
+                }
+                if (pos < i.StartB + i.insertedB)
+                {
+                    while (pos < i.StartB + i.insertedB)
+                    {
+                        diffItems.Add(1);
+                        pos++;
+                    }
+                }
+            }
+
+            while (pos < flatRight.Count)
+            {
+                diffItems.Add(0);
+            }
 
             var leftPointer = 0;
             var rightPointer = 0;
             var lineIndex = 0;
-            for (lineIndex = 0; lineIndex < diffModel.Lines.Count; lineIndex++)
+
+            for (lineIndex = 0; lineIndex < diffItems.Count; lineIndex++)
             {
-                var curDiff = diffModel.Lines[lineIndex];
-                switch (curDiff.Type)
+                var curDiff = diffItems[lineIndex];
+                switch (curDiff)
                 {
-                    case DiffPlex.DiffBuilder.Model.ChangeType.Unchanged:
+                    case 0:
                         sameMap.Add(flatLeft[leftPointer++], flatRight[rightPointer++]);
                         break;
-                    case DiffPlex.DiffBuilder.Model.ChangeType.Inserted:
+                    case 1:
                         var call = flatRight[rightPointer++];
                         call.DiffStatus = DiffStatus.INSERT;
                         var parent = call.Parent;
@@ -68,7 +99,7 @@ namespace TraceWizard
                             parent = parent.Parent;
                         }
                         break;
-                    case DiffPlex.DiffBuilder.Model.ChangeType.Deleted:
+                    case -1:
                         call = flatLeft[leftPointer++];
                         call.DiffStatus = DiffStatus.DELETE;
                         parent = call.Parent;

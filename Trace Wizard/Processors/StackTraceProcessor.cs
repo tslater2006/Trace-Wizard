@@ -82,7 +82,7 @@ namespace TraceWizard.Processors
         }
         private void ProcessNewException(string line, long lineNumber)
         {
-            Regex exceptionStart = new Regex("Caught Exception:\\s+(.*?)\\s+\\(0,0\\)\\s+(.*)");
+            Regex exceptionStart = new Regex("Caught Exception:\\s+(.*?)\\s+\\(\\d+,\\d+\\)\\s+(.*)");
 
             var match = exceptionStart.Match(line);
             if (match.Success)

@@ -432,7 +432,12 @@ namespace TraceWizard
             {
                 node.Collapse();
             }
-
+            if (trace.Parent == null)
+            {
+                /* try to find the closest one */
+                var bestGuess = traceData.AllExecutionCalls.Where(c => c.StartLine <= trace.LineNumber && c.StopLine >= trace.LineNumber).Last();
+                trace.Parent = bestGuess;
+            }
             if (ExecCallToTree.ContainsKey(trace.Parent))
             {
                 var nodeParent = ExecCallToTree[trace.Parent];

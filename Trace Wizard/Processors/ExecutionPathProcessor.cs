@@ -120,35 +120,7 @@ namespace TraceWizard.Processors
         ExecutionCall FindCallForLineNumber(long lineNumber)
         {
             ExecutionCall call = null;
-            /* need to find top level call first */
-            foreach (var c in executionCalls)
-            {
-                if (c.StartLine <= lineNumber && c.StopLine >= lineNumber)
-                {
-                    call = c;
-                    break;
-                }
-            }
-
-            do
-            {
-                var newPotentialFound = false;
-                foreach (var child in call.Children)
-                {
-                    newPotentialFound = false;
-                    if (child.StartLine <= lineNumber && child.StopLine >= lineNumber)
-                    {
-                        call = child;
-                        newPotentialFound = true;
-                        break;
-                    }
-                }
-                if (newPotentialFound == false)
-                {
-                    call = null;
-                    break;
-                }
-            } while (call.Children.Count > 0);
+            call = allCalls.Where(c => c.StartLine <= lineNumber && c.StopLine >= lineNumber).Last();
 
             return call;
         }

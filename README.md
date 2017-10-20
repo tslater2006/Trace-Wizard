@@ -27,16 +27,16 @@ There are certain trace settings that work best with Trace Wizard.
 You should have the following boxes checked:
 
 * SQL:
- * SQL Statements
- * SQL statement variables
- * SQL connect,disconnect,commit,rollback
- * SQL fetch
- * ALL other SQL API calls except SSBs
+  * SQL Statements
+  * SQL statement variables
+  * SQL connect,disconnect,commit,rollback
+  * SQL fetch
+  * ALL other SQL API calls except SSBs
 
 * PeopleCode
- * Program Starts
- * External function calls
- * Internal function calls
+  * Program Starts
+  * External function calls
+  * Internal function calls
 
 ## Execution Path
 

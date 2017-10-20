@@ -56,6 +56,8 @@ The execution path view supports searching for function names/line numbers, you 
 
 The Execution path is also useful for locating troublesome calls in terms of timing, if a page is slow to load, the proper tracesql and Trace Wizard should make it easy to pinpoint the functions responsible.
 
+To help enable this, you can go to Edit -> Settings and adjust the duration (in seconds) that you would like to consider "slow", after this Trace Wizard will highlight any calls in the Execution Path that exceeded this threshold with a green color.
+
 ## SQL Statements
 
 ### Overview
@@ -78,9 +80,7 @@ The ALL view is the default view and will show each individual SQL statement. Cl
 
 ### Where View
 
-Directly underneath the File menu, there are 3 buttons labelled A/W/F, clicking on the "A" button will reset the SQL View tab to displaying the ALL view.
-
-The other views provided are the "WHERE and FROM" views.
+This view can be accessed by selecting View -> SQL -> By Where Clause
 
 The WHERE view groups the SQL statements by unique Where clause and gives aggregate counts for each group as well as total execution time.
 
@@ -90,7 +90,21 @@ You can also double click on one of these items to be taken to that specific SQL
 
 ### From View
 
-This view is triggered by clicking on the "F" button. It operates basically the same to the WHERE view, except it is grouping by FROM statements instead of WHERE
+This view can be accessed by selecting View -> SQL -> By From Clause
+
+It operates basically the same to the WHERE view, except it is grouping by FROM statements instead of WHERE
+
+### Errors View
+
+This view can be accessed by selecting View -> SQL -> Errors
+
+This view mode shows any SQL statements that had errors. Double clicking on one of this will take you to the appropriate line in the execution context.
+
+### Tables View
+
+This view can be accessed by selecting View -> SQL -> Errors
+
+This view mode show a list of all tables that where the subject of the "From" clause, and an aggregate count of how many SQL statements used that table.
 
 ### Searching
 

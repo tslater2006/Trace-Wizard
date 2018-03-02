@@ -52,6 +52,7 @@ namespace TraceWizard
 
         private void CheckForNewVersion()
         {
+
             /*https://github.com/tslater2006/Trace-Wizard/releases/latest*/
             HttpWebRequest req = WebRequest.CreateHttp("https://github.com/tslater2006/Trace-Wizard/releases/latest");
             req.AllowAutoRedirect = false;
@@ -69,6 +70,7 @@ namespace TraceWizard
 
         public MainForm()
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             InitializeComponent();
             CheckForNewVersion();
             executionTree.MouseDown += (sender, args) => 

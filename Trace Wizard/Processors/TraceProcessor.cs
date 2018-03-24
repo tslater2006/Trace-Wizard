@@ -46,12 +46,15 @@ namespace TraceWizard.Processors
         {
             var lineCount = File.ReadLines(_file).Count();
 
-            List<ITraceProcessor> Processors = new List<ITraceProcessor>();
-            Processors.Add(new SQLProcessor());
-            Processors.Add(new StackTraceProcessor());
+            List<ITraceProcessor> Processors = new List<ITraceProcessor>
+            {
+                new CobolTraceProcessor(),
+                new SQLProcessor(),
+                new StackTraceProcessor(),
 
-            /* NOTE: This one is purposefully last because it relies on SQL and StackTrace data in post process */
-            Processors.Add(new ExecutionPathProcessor());
+                /* NOTE: This one is purposefully last because it relies on SQL and StackTrace data in post process */
+                new ExecutionPathProcessor()
+            };
             foreach (ITraceProcessor proc in Processors)
             {
                 proc.ProcessorInit(Data);

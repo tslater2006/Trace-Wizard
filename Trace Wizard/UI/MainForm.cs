@@ -143,7 +143,7 @@ namespace TraceWizard
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz";
+            openFileDialog1.Filter = "Trace Files|*.tracesql;*.trc;*.twiz";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
 
@@ -338,6 +338,10 @@ namespace TraceWizard
 
                     if (selectedItem.Tag.GetType().Equals(typeof(SQLStatement)))
                     {
+                        if (((SQLStatement)(selectedItem.Tag)).Cobol)
+                        {
+                            return;
+                        }
                         if (IsRunningMono)
                         {
                             var callDepth = 0;

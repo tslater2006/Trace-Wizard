@@ -60,7 +60,7 @@ namespace TraceWizard.Data
         public double FetchTime;
 
         public bool IsError;
-
+        public bool Cobol;
         public SQLError ErrorInfo;
         
         public int RCNumber;
@@ -192,6 +192,7 @@ namespace TraceWizard.Data
         public uint InternalID = NextID++;
         public int Index;
         public int Type;
+        public string TypeString;
         public int Length;
         public string Value;
     }

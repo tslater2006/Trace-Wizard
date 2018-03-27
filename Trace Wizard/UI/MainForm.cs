@@ -48,7 +48,7 @@ namespace TraceWizard
     {
         public static bool IsRunningMono = false;
         public static bool IsRunningOSX = false;
-        //private double Version = 1.4;
+        private double Version = 1.4;
 
         private void CheckForNewVersion()
         {
@@ -75,7 +75,6 @@ namespace TraceWizard
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             InitializeComponent();
-            CheckForNewVersion();
             executionTree.MouseDown += (sender, args) => 
                 executionTree.SelectedNode = executionTree.GetNodeAt(args.X, args.Y);
 

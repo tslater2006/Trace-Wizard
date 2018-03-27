@@ -48,7 +48,7 @@ namespace TraceWizard
     {
         public static bool IsRunningMono = false;
         public static bool IsRunningOSX = false;
-        private double Version = 1.4;
+        //private double Version = 1.4;
 
         private void CheckForNewVersion()
         {
@@ -65,6 +65,9 @@ namespace TraceWizard
                 {
                     System.Diagnostics.Process.Start("https://github.com/tslater2006/Trace-Wizard/releases/latest");
                 }
+            } else
+            {
+                MessageBox.Show("No update available at this time.");
             }
         }
 
@@ -123,7 +126,6 @@ namespace TraceWizard
         private bool _execSearchInProgress = false;
         private bool _sqlSearchInProgress = false;
         private bool _traceSearchInProgress = false;
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -1189,6 +1191,17 @@ namespace TraceWizard
         private void compareTracesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new CompareDialog(traceData).ShowDialog(this);
+        }
+
+        private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                CheckForNewVersion();
+            }catch(Exception ex)
+            {
+                MessageBox.Show("An error happened while checking for a new release.");
+            }
         }
     }
 

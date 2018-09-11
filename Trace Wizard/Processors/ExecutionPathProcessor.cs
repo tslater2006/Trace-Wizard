@@ -53,6 +53,8 @@ namespace TraceWizard.Processors
         internal string ReturnStackClassMethod = null;
         internal ExecutionCall ReturnStackCall = null;
 
+        public bool ParsingReturnValue { get; internal set; }
+
         internal ExecutionContext(string contextID)
         {
             ContextID = contextID;
@@ -341,6 +343,17 @@ namespace TraceWizard.Processors
             ReturnStackClassName = null;
             ReturnStackIsClass = false;
             ParsingReturnStack = false;
+            ParsingReturnValue = false;
+        }
+
+        internal void ProcessReturnValue(Match match, long lineNumber)
+        {
+            if (ReturnStackCall != null)
+            {
+                ReturnStackCall.ReturnValue = match.Groups[1].Value;
+                ParsingReturnValue = false;
+                ResetReturnStack();
+            }
         }
     }
 
@@ -364,7 +377,8 @@ namespace TraceWizard.Processors
         Regex returnStackLinePrimitive = new Regex("\\d+\\.\\d+\\s{42}(.*?)([=:])(.*)");
         Regex returnStackLineBuiltin = new Regex("\\d+\\.\\d+\\s{42}(.*)");
 
-
+        Regex returnValue = new Regex("return value:");
+        Regex returnValueResult = new Regex("\\d+\\.\\d+\\s{42}(.*)");
 
         Dictionary<string, ExecutionContext> contextMap = new Dictionary<string, ExecutionContext>();
 
@@ -539,7 +553,6 @@ namespace TraceWizard.Processors
                 context.ParsingReturnStack = true;
                 return;
             }
-
             if (context.ParsingReturnStack)
             {
                 match = returnStackLinePrimitive.Match(line);
@@ -552,8 +565,29 @@ namespace TraceWizard.Processors
                     if (match.Success)
                     {
                         context.ProcessReturnStackLine(match, lineNumber);
+                    } else
+                    {
+                        match = returnValue.Match(line);
+                        if (match.Success)
+                        {
+                            context.ParsingReturnStack = false;
+                            context.ParsingReturnValue = true;
+                            return;
+                        } else
+                        {
+                            context.ResetReturnStack();
+                        }
                     }
-                    context.ResetReturnStack();
+                    
+                }
+            }
+
+            if (context.ParsingReturnValue)
+            {
+                match = returnValueResult.Match(line);
+                if (match.Success)
+                {
+                    context.ProcessReturnValue(match, lineNumber);
                 }
             }
 

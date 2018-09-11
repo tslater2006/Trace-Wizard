@@ -126,6 +126,13 @@ namespace TraceWizard.UI
                         lines.Add($"    {param}");
                     }
                 }
+                if (exec.ReturnValue != null)
+                {
+                    lines.Add("Return Value:");
+
+                    lines.Add($"    {exec.ReturnValue}");
+
+                }
                 if (exec.HasError)
                 {
                     // alert that somewhere below has an error

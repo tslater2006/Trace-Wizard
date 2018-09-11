@@ -42,10 +42,16 @@ namespace TraceWizard.Processors
         internal List<ExecutionCall> sqlCalls = new List<ExecutionCall>();
 
         Stack<ExecutionCall> callChain = new Stack<ExecutionCall>();
-
+        ExecutionCall lastPopped;
         internal int _maxCallDepth;
         internal long _ppcCodeCallCount;
         internal long _ppcExceptionCount;
+        internal bool ParsingReturnStack;
+        internal bool ReturnStackIsClass;
+
+        internal string ReturnStackClassName = null;
+        internal string ReturnStackClassMethod = null;
+        internal ExecutionCall ReturnStackCall = null;
 
         internal ExecutionContext(string contextID)
         {
@@ -65,6 +71,7 @@ namespace TraceWizard.Processors
                 {
                     popped.StopLine = lineNumber;
                 }
+                lastPopped = popped;
             }
 
             if (callChain.Count > 0 && callChain.Peek().Type == ExecutionCallType.CALL)
@@ -76,6 +83,7 @@ namespace TraceWizard.Processors
                     {
                         popped.StopLine = lineNumber;
                     }
+                    lastPopped = popped;
                 }
             }
 
@@ -89,6 +97,7 @@ namespace TraceWizard.Processors
                 executionCalls.Add(call);
             }
             callChain.Push(call);
+            ResetReturnStack();
             return;
         }
 
@@ -108,6 +117,7 @@ namespace TraceWizard.Processors
             {
                 _maxCallDepth = callChain.Count;
             }
+            ResetReturnStack();
         }
 
         internal void ProcessEndOrReend(Match match, long lineNumber)
@@ -122,6 +132,7 @@ namespace TraceWizard.Processors
             while (callFound == false)
             {
                 call = callChain.Pop();
+                lastPopped = call;
                 if (call.Nest == nest && call.Function == func)
                 {
                     callFound = true;
@@ -140,6 +151,7 @@ namespace TraceWizard.Processors
                 parent.Children.Add(call);
                 call.Parent = parent;
             }
+            ResetReturnStack();
         }
 
         internal void ProcessStartExtMarker(Match match, long lineNumber)
@@ -157,6 +169,7 @@ namespace TraceWizard.Processors
             if (callChain.Count > 0 && callChain.Peek().Type == ExecutionCallType.CALL)
             {
                 var parent = callChain.Pop();
+                lastPopped = parent;
                 if (parent.StopLine == 0)
                 {
                     parent.StopLine = lineNumber;
@@ -170,6 +183,7 @@ namespace TraceWizard.Processors
             {
                 _maxCallDepth = callChain.Count;
             }
+            ResetReturnStack();
         }
 
         internal void ProcessEndExtMarker(Match match, long lineNumber)
@@ -188,13 +202,15 @@ namespace TraceWizard.Processors
                     {
                         popped.StopLine = lineNumber;
                     }
+                    lastPopped = popped;
                 }
             }
 
-            //var call = executionCalls.Where(p => p.Context.Equals(currentContextString) && p.Nest.Equals(nest) && p.Function.Equals(func) && p.StopLine == 0).First<ExecutionCall>();
             var call = callChain.Pop();
+            lastPopped = call;
             call.StopLine = lineNumber;
             call.Duration = Double.Parse(dur);
+            ResetReturnStack();
         }
 
         internal void ProcessSQLStatement(Match match, long lineNumber)
@@ -211,6 +227,7 @@ namespace TraceWizard.Processors
                 executionCalls.Add(sqlCall);
             }
             sqlCalls.Add(sqlCall);
+            ResetReturnStack();
         }
 
         internal void ProcessPPCException(Match match, long lineNumber)
@@ -229,6 +246,101 @@ namespace TraceWizard.Processors
                     parent = parent.Parent;
                 }
             }
+            ResetReturnStack();
+        }
+
+        internal void ProcessReturnStackLine(Match match, long lineNumber)
+        {
+            if (ReturnStackIsClass == false)
+            {
+                if (match.Groups[1].Value.StartsWith("UUU") && match.Groups[2].Value == ":")
+                {
+                    ReturnStackIsClass = true;
+                    ReturnStackClassName = match.Groups[3].Value;
+                }
+                else
+                {
+                    if (callChain.Peek().Parent.Function.StartsWith("constructor:"))
+                    {
+                        /* this is a constructor parameter? */
+                        ReturnStackIsClass = true;
+                        ReturnStackClassMethod = "";
+                        ReturnStackCall = callChain.Peek().Parent;
+                        ReturnStackCall.Parameters = new List<string>();
+                        ProcessReturnStackLine(match, lineNumber);
+                    }
+                    else
+                    {
+                        ReturnStackIsClass = false;
+                        ReturnStackClassName = null;
+                        ReturnStackClassMethod = null;
+                        ReturnStackCall = null;
+                    }
+                }
+            }
+            else
+            {
+                /* already identified this return stack as a class */
+                if (ReturnStackClassMethod == null)
+                {
+                    ReturnStackClassMethod = match.Groups[3].Value;
+                }
+                else
+                {
+                    if (ReturnStackCall == null)
+                    {
+
+                        /* find the most recent call that matches that doesn't have parameters... */
+                        ReturnStackCall = allCalls.Where(c => c.Parameters == null && c.Function.Contains($":{ReturnStackClassName}.{ReturnStackClassMethod}")).LastOrDefault();
+                       if (ReturnStackCall == null)
+                        {
+                            /* Check for a private method */
+                            ReturnStackCall = allCalls.Where(c => c.Parameters == null && c.Function.Contains($"private: {ReturnStackClassMethod}")).LastOrDefault();
+                        }
+
+                        /* add this parameter */
+                        if (ReturnStackCall != null)
+                        {
+                            ReturnStackCall.Parameters = new List<string>();
+                            if (match.Groups.Count > 2)
+                            {
+                                /* this is a Something = Something parameter */
+                                ReturnStackCall.Parameters.Add($"{match.Groups[1].Value} = {match.Groups[3].Value}");
+                            } else
+                            {
+                                /* this parameter is a builtin like array or record etc */
+                                ReturnStackCall.Parameters.Add($"{match.Groups[1].Value}");
+                            }
+                            
+                        }
+                    }
+                    else
+                    {
+                        /* we've found the call, this must be a parameter... add it */
+                        if (match.Groups.Count > 1)
+                        {
+                            /* this is a Something = Something parameter */
+                            ReturnStackCall.Parameters.Add($"{match.Groups[1].Value} = {match.Groups[3].Value}");
+                        }
+                        else
+                        {
+                            /* this parameter is a builtin like array or record etc */
+                            ReturnStackCall.Parameters.Add($"{match.Groups[1].Value}");
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+        internal void ResetReturnStack()
+        {
+            ReturnStackCall = null;
+            ReturnStackClassMethod = null;
+            ReturnStackClassName = null;
+            ReturnStackIsClass = false;
+            ParsingReturnStack = false;
         }
     }
 
@@ -247,6 +359,12 @@ namespace TraceWizard.Processors
 
         Regex resumeMarker = new Regex(">>> resume\\s+Nest=(\\d+)\\s+(.*)");
         Regex reendMarker = new Regex(">>> reend\\s+Nest=(\\d+)\\s+(.*)");
+
+        Regex returnStack = new Regex("return stack:");
+        Regex returnStackLinePrimitive = new Regex("\\d+\\.\\d+\\s{42}(.*?)([=:])(.*)");
+        Regex returnStackLineBuiltin = new Regex("\\d+\\.\\d+\\s{42}(.*)");
+
+
 
         Dictionary<string, ExecutionContext> contextMap = new Dictionary<string, ExecutionContext>();
 
@@ -413,6 +531,32 @@ namespace TraceWizard.Processors
                 return;
 
             }
+
+            match = returnStack.Match(line);
+            if (match.Success)
+            {
+                context.ResetReturnStack();
+                context.ParsingReturnStack = true;
+                return;
+            }
+
+            if (context.ParsingReturnStack)
+            {
+                match = returnStackLinePrimitive.Match(line);
+                if (match.Success)
+                {
+                    context.ProcessReturnStackLine(match, lineNumber);
+                } else
+                {
+                    match = returnStackLineBuiltin.Match(line);
+                    if (match.Success)
+                    {
+                        context.ProcessReturnStackLine(match, lineNumber);
+                    }
+                    context.ResetReturnStack();
+                }
+            }
+
             return;
         }
     }

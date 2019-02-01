@@ -60,12 +60,13 @@ namespace TraceWizard
             var latestVersion = double.Parse(resp.Headers["Location"].Split('/').Last());
             if (latestVersion > Version)
             {
-                var result = MessageBox.Show($"Version {latestVersion} is available for download on GitHub. Would you like to go there now?", "New Version Available",MessageBoxButtons.YesNo);
+                var result = MessageBox.Show($"Version {latestVersion} is available for download on GitHub. Would you like to go there now?", "New Version Available", MessageBoxButtons.YesNo);
                 if (result == DialogResult.Yes)
                 {
                     System.Diagnostics.Process.Start("https://github.com/tslater2006/Trace-Wizard/releases/latest");
                 }
-            } else
+            }
+            else
             {
                 MessageBox.Show("No update available at this time.");
             }
@@ -75,11 +76,11 @@ namespace TraceWizard
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             InitializeComponent();
-            executionTree.MouseDown += (sender, args) => 
+            executionTree.MouseDown += (sender, args) =>
                 executionTree.SelectedNode = executionTree.GetNodeAt(args.X, args.Y);
 
             IsRunningMono = Type.GetType("Mono.Runtime") != null;
-            
+
             if (IsRunningMono && Properties.Settings.Default.MonoFirstRun)
             {
                 var result = new MonoWarningDialog().ShowDialog(this);
@@ -93,8 +94,9 @@ namespace TraceWizard
             if (IsRunningMono)
             {
                 /* detect if running OSX for special "Copy" functionality */
-            if (Directory.Exists("/Applications")
-                    && Directory.Exists("/Users")) {
+                if (Directory.Exists("/Applications")
+                        && Directory.Exists("/Users"))
+                {
                     IsRunningOSX = true;
                 }
             }
@@ -219,15 +221,16 @@ namespace TraceWizard
                 return;
             }
             UIBuilder.BuildExecutionTree(traceData, executionTree, SQLMapToTree, ExecCallToTree);
-            sortAscending = true; 
+            sortAscending = true;
 
-            switch(currentSQLDisplay)
+            switch (currentSQLDisplay)
             {
                 case SQLDisplayType.ALL:
                     if (errorsToolStripMenuItem.Checked)
                     {
                         UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements.Where(s => s.IsError).ToList());
-                    } else
+                    }
+                    else
                     {
                         UIBuilder.BuildAllSQLList(sqlListView, traceData.SQLStatements);
                     }
@@ -239,7 +242,7 @@ namespace TraceWizard
                     UIBuilder.BuildFromSQLList(sqlListView, traceData.SQLByFrom);
                     break;
             }
-            
+
             UIBuilder.BuildStackTraceList(stackTraceListView, traceData.StackTraces);
 
             var tabPage = UIBuilder.BuildStatisticsPage(traceData.Statistics, handleStatisticDoubleClick);
@@ -493,7 +496,7 @@ namespace TraceWizard
                         }
                     }
                 }
-                
+
                 if (selectedItem.Tag != null)
                 {
                     GoToStackTraceInExecPath((StackTraceEntry)(selectedItem.Tag));
@@ -907,7 +910,8 @@ namespace TraceWizard
             if (IsRunningOSX)
             {
                 OSXClipboard.CopyToClipboard(sqlStatement.Statement);
-            } else
+            }
+            else
             {
                 Clipboard.SetText(sqlStatement.Statement);
             }
@@ -929,7 +933,8 @@ namespace TraceWizard
             if (IsRunningOSX)
             {
                 OSXClipboard.CopyToClipboard(sb.ToString());
-            } else
+            }
+            else
             {
                 Clipboard.SetText(sb.ToString());
             }
@@ -941,29 +946,13 @@ namespace TraceWizard
         {
             var sqlStatement = sqlListView.SelectedItems[0].Tag as SQLStatement;
 
-            string workingStatement = sqlStatement.Statement;
-
-            foreach (var b in sqlStatement.BindValues.OrderBy(p => p.Index).Reverse())
-            {
-                var valueString = "";
-                if (b.Type == 19)
-                {
-                    valueString = b.Value;
-                }
-                else
-                {
-                    valueString = "'" + b.Value + "'";
-                }
-                workingStatement = workingStatement.Replace(":" + b.Index, valueString);
-            }
-
             if (IsRunningOSX)
             {
-                OSXClipboard.CopyToClipboard(workingStatement);
+                OSXClipboard.CopyToClipboard(ResolveSQLStatement(sqlStatement));
             }
             else
             {
-                Clipboard.SetText(workingStatement);
+                Clipboard.SetText(ResolveSQLStatement(sqlStatement));
             }
 
             MessageBox.Show("Resolved statement copied to clipboard.");
@@ -1016,11 +1005,12 @@ namespace TraceWizard
                 if (IsRunningOSX)
                 {
                     OSXClipboard.CopyToClipboard(sb.ToString());
-                } else
+                }
+                else
                 {
                     Clipboard.SetText(sb.ToString());
                 }
-                
+
                 MessageBox.Show("Stack trace copied successfully.");
             }
 
@@ -1055,7 +1045,8 @@ namespace TraceWizard
                 if (IsRunningOSX)
                 {
                     OSXClipboard.CopyToClipboard(sb.ToString());
-                } else
+                }
+                else
                 {
                     Clipboard.SetText(sb.ToString());
                 }
@@ -1197,10 +1188,61 @@ namespace TraceWizard
             try
             {
                 CheckForNewVersion();
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show("An error happened while checking for a new release.");
             }
+        }
+
+        private void generateSQLScriptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (traceData == null)
+            {
+                MessageBox.Show("Please open a trace file before using this feature.");
+                return;
+            }
+            saveFileDialog3.Filter = "SQL Files (*.sql)|*.sql";
+            if (saveFileDialog3.ShowDialog(this) == DialogResult.OK)
+            {
+                string fileName = saveFileDialog3.FileName;
+                StringBuilder sb = new StringBuilder();
+
+                foreach (var stmt in traceData.SQLStatements.OrderBy(s => s.LineNumber))
+                {
+                    string sqlText = ResolveSQLStatement(stmt);
+                    if (sqlText.ToUpper().StartsWith("SELECT") == false)
+                    {
+                        sqlText = "-- " + sqlText;
+                    }
+
+                    sb.Append(sqlText).Append(";\r\n\r\n");
+                }
+
+                File.WriteAllText(fileName, sb.ToString());
+
+                MessageBox.Show("SQL file generated!");
+            }
+
+        }
+        private string ResolveSQLStatement(SQLStatement statement)
+        {
+            string workingStatement = statement.Statement;
+
+            foreach (var b in statement.BindValues.OrderBy(p => p.Index).Reverse())
+            {
+                var valueString = "";
+                if (b.Type == 19)
+                {
+                    valueString = b.Value;
+                }
+                else
+                {
+                    valueString = "'" + b.Value + "'";
+                }
+                workingStatement = workingStatement.Replace(":" + b.Index, valueString);
+            }
+            return workingStatement;
         }
     }
 

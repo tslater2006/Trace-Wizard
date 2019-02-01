@@ -118,7 +118,21 @@ namespace TraceWizard.UI
                 {
                     lines.Add(exec.Function);
                 }
-                
+                if (exec.Parameters != null && exec.Parameters.Count > 0)
+                {
+                    lines.Add("Parameters:");
+                    foreach(string param in exec.Parameters)
+                    {
+                        lines.Add($"    {param}");
+                    }
+                }
+                if (exec.ReturnValue != null)
+                {
+                    lines.Add("Return Value:");
+
+                    lines.Add($"    {exec.ReturnValue}");
+
+                }
                 if (exec.HasError)
                 {
                     // alert that somewhere below has an error

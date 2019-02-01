@@ -66,6 +66,13 @@ namespace TraceWizard.UI
                     {
                         leftData = new TraceDeserializer().DeserializeTraceData(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.None));
                         UIBuilder.BuildExecutionTree(leftData, execTreeLeft, SQLMap, ExecMap, false);
+                        btnLeftSelectAll.Enabled = true;
+                        btnCopyToRight.Enabled = true;
+                        if (leftData != null && rightData != null)
+                        {
+                            btnCompare.Enabled = true;
+                        }
+                        System.GC.Collect();
                     }
                     else
                     {
@@ -138,6 +145,12 @@ namespace TraceWizard.UI
                     {
                         rightData = new TraceDeserializer().DeserializeTraceData(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.None));
                         UIBuilder.BuildExecutionTree(rightData, execTreeRight, SQLMap, ExecMap, false);
+                        btnRightSelectAll.Enabled = true;
+                        if (leftData != null && rightData != null)
+                        {
+                            btnCompare.Enabled = true;
+                        }
+                        System.GC.Collect();
                     }
                     else
                     {

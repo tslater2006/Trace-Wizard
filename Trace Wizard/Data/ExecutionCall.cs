@@ -54,6 +54,9 @@ namespace TraceWizard.Data
 
         protected double _duration;
 
+        public List<string> Parameters;
+        public string ReturnValue;
+
         public double InternalDuration
         {
             get

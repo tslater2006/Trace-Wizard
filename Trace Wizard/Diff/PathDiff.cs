@@ -71,6 +71,7 @@ namespace TraceWizard
             while (pos < flatRight.Count)
             {
                 diffItems.Add(0);
+                pos++;
             }
 
             var leftPointer = 0;

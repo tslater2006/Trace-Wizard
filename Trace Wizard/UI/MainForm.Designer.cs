@@ -88,6 +88,8 @@
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
+            this.detailsContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyDetailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.sqlItemContextStrip.SuspendLayout();
@@ -102,6 +104,7 @@
             this.stackTraceTab.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
+            this.detailsContextStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -278,7 +281,7 @@
             // generateSQLScriptToolStripMenuItem
             // 
             this.generateSQLScriptToolStripMenuItem.Name = "generateSQLScriptToolStripMenuItem";
-            this.generateSQLScriptToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.generateSQLScriptToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.generateSQLScriptToolStripMenuItem.Text = "Generate SQL Script";
             this.generateSQLScriptToolStripMenuItem.Click += new System.EventHandler(this.generateSQLScriptToolStripMenuItem_Click);
             // 
@@ -605,6 +608,7 @@
             // 
             // detailsBox
             // 
+            this.detailsBox.ContextMenuStrip = this.detailsContextStrip;
             this.detailsBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.detailsBox.FormattingEnabled = true;
             this.detailsBox.HorizontalScrollbar = true;
@@ -629,6 +633,20 @@
             this.toolStripContainer1.Size = new System.Drawing.Size(1030, 497);
             this.toolStripContainer1.TabIndex = 2;
             this.toolStripContainer1.Text = "toolStripContainer1";
+            // 
+            // detailsContextStrip
+            // 
+            this.detailsContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyDetailsToolStripMenuItem});
+            this.detailsContextStrip.Name = "detailsContextStrip";
+            this.detailsContextStrip.Size = new System.Drawing.Size(181, 48);
+            // 
+            // copyDetailsToolStripMenuItem
+            // 
+            this.copyDetailsToolStripMenuItem.Name = "copyDetailsToolStripMenuItem";
+            this.copyDetailsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.copyDetailsToolStripMenuItem.Text = "Copy Details";
+            this.copyDetailsToolStripMenuItem.Click += new System.EventHandler(this.copyDetailsToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -665,6 +683,7 @@
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
+            this.detailsContextStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -731,6 +750,8 @@
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generateSQLScriptToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveFileDialog3;
+        private System.Windows.Forms.ContextMenuStrip detailsContextStrip;
+        private System.Windows.Forms.ToolStripMenuItem copyDetailsToolStripMenuItem;
     }
 }
 

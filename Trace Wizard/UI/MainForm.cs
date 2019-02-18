@@ -1244,6 +1244,25 @@ namespace TraceWizard
             }
             return workingStatement;
         }
+
+        private void copyDetailsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sb = new StringBuilder();
+            foreach(var line in detailsBox.Items)
+            {
+                sb.AppendLine(line.ToString());
+            }
+
+
+            if (IsRunningOSX)
+            {
+                OSXClipboard.CopyToClipboard(sb.ToString());
+            }
+            else
+            {
+                Clipboard.SetText(sb.ToString());
+            }
+        }
     }
 
     enum SQLDisplayType

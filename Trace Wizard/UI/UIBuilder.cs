@@ -23,7 +23,9 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -248,6 +250,354 @@ namespace TraceWizard.UI
             view.EndUpdate();
         }
 
+        internal static void BuildPPCObjectList(TraceData traceData, TreeView ppcObjectTree)
+        {
+            ppcObjectTree.Nodes.Clear();
+            TreeNode AppClassRoot = ppcObjectTree.Nodes.Add("Application Classes");
+            TreeNode PageRoot = null;
+            TreeNode CompRecFieldRoot = null;
+            TreeNode RecFieldRoot = null;
+            TreeNode RecFuncRoot = null;
+            Dictionary<string, TreeNode> ClassNodeRoots = new Dictionary<string, TreeNode>();
+            Dictionary<string, TreeNode> PageNodeRoots = new Dictionary<string, TreeNode>();
+            Dictionary<string, TreeNode> CompRecFldNodeRoots = new Dictionary<string, TreeNode>();
+            Dictionary<string, TreeNode> RecFldNodeRoots = new Dictionary<string, TreeNode>();
+            Dictionary<string, TreeNode> RecFuncNodeRoots = new Dictionary<string, TreeNode>();
+            Dictionary<TreeNode, int> NodeCounts = new Dictionary<TreeNode, int>();
+
+            foreach (var x in traceData.AllExecutionCalls)
+            {
+                /* Record "IScript_StartPage WEBLIB_IS_MOBR.ISCRIPT1.FieldFormula" */
+                /* Function "ext: FUNCLIB_PTBR.FUNCLIB FieldFormula fcn=setThemeCookieForPortal #params=1" */
+                /* Function "setThemeCookieForPortal FUNCLIB_PTBR.FUNCLIB.FieldFormula" */
+                /* App Class Constructor "BrandingManager PTBR_BRANDING.BrandingManager.OnExecute" */
+                /* App Class method "writeThemeAssignmentCookieForPortal PTBR_BRANDING.BrandingManager.OnExecute" */
+                if (x.Function.EndsWith(".OnExecute"))
+                {
+                    var appClassMethodParts = x.Function.Split(' ');
+                    var appClassPackage = appClassMethodParts[1];
+                    var methodName = appClassMethodParts[0];
+                    var packageParts = appClassPackage.Split('.');
+                    /* app class */
+                    var parentNode = AppClassRoot;
+                    /* build out package nodes if needed */
+                    /* have we already built out this whole thing? */
+                    if (ClassNodeRoots.ContainsKey(x.Function) == false)
+                    {
+
+                        for (var y = 0; y < packageParts.Length - 1; y++)
+                        {
+                            var searchString = String.Join(".", packageParts, 0, y + 1);
+                            if (ClassNodeRoots.ContainsKey(searchString) == false)
+                            {
+                                var newNode = new TreeNode(packageParts[y]);
+                                parentNode.Nodes.Add(newNode);
+                                ClassNodeRoots.Add(searchString, newNode);
+                                parentNode = newNode;
+                            }
+                            else
+                            {
+                                parentNode = ClassNodeRoots[searchString];
+                            }
+                        }
+
+                        /* we've built all of the packages, now lets add the actual method node */
+                        var method = parentNode.Nodes.Add(methodName);
+                        method.Tag = x;
+                        ClassNodeRoots.Add(x.Function, method);
+                        NodeCounts.Add(method, 1);
+                    }
+                    else
+                    {
+                        NodeCounts[ClassNodeRoots[x.Function]] = NodeCounts[ClassNodeRoots[x.Function]] + 1;
+                    }
+
+                    /* get method node */
+                    var methodNode = ClassNodeRoots[x.Function];
+
+                    if (x.IsError)
+                    {
+                        methodNode.BackColor = Color.Red;
+                        var methodParent = methodNode.Parent;
+                        while (methodParent != null)
+                        {
+                            methodParent.BackColor = Color.Yellow;
+                            methodParent = methodParent.Parent;
+                        }
+                    }
+                    else if (x.Duration >= Properties.Settings.Default.LongCall && methodNode.BackColor != Color.Yellow)
+                    {
+                        methodNode.BackColor = Color.LightGreen;
+                        var methodParent = methodNode.Parent;
+                        while (methodParent != null)
+                        {
+                            methodParent.BackColor = methodNode.BackColor;
+                            methodParent = methodParent.Parent;
+                        }
+                    }
+
+
+                }
+                else if (x.Function.EndsWith("Activate"))
+                {
+                    /* Page activate */
+                    if (PageRoot == null)
+                    {
+                        PageRoot = ppcObjectTree.Nodes.Add("Pages");
+                    }
+                    if (PageNodeRoots.ContainsKey(x.Function) == false)
+                    {
+                        var pageNode = PageRoot.Nodes.Add(x.Function.Split('.')[0]);
+                        PageNodeRoots.Add(x.Function, pageNode);
+                        NodeCounts.Add(pageNode, 1);
+
+                        if (x.IsError)
+                        {
+                            pageNode.BackColor = Color.Red;
+                            var pageParent = pageNode.Parent;
+                            while (pageParent != null)
+                            {
+                                pageParent.BackColor = Color.Yellow;
+                                pageParent = pageParent.Parent;
+                            }
+                        }
+                        else if (x.Duration >= Properties.Settings.Default.LongCall && pageNode.BackColor != Color.Yellow)
+                        {
+                            pageNode.BackColor = Color.LightGreen;
+                            var pageParent = pageNode.Parent;
+                            while (pageParent != null)
+                            {
+                                pageParent.BackColor = pageNode.BackColor;
+                                pageParent = pageParent.Parent;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        /* node already exists, just increment its count */
+                        NodeCounts[PageNodeRoots[x.Function]] = NodeCounts[PageNodeRoots[x.Function]] + 1;
+                    }
+                }
+                else
+                {
+                    /* rest of the stuff we care about is component/record/field stuff */
+                    var fieldEvents = new string[] { "FieldDefault", "FieldFormula", "FieldChange", "FieldEdit", "SaveEdit", "RowInit", "SavePreChange", "SavePostChange", "RowSelect", "RowInsert", "RowDelete", "SearchInit", "SearchSave", "Workflow", "PrePopup" };
+                    var componentEvents = new string[] { "PreBuild", "PostBuild", "SavePreChange", "SavePostChange", "Workflow" };
+                    var compRecordEvents = new string[] { "RowInit", "RowInsert", "RowDelete", "RowSelect", "SaveEdit", "SavePostChange", "SavePreChange" };
+
+                    /* get the tail end of the function */
+                    if (x.Function.Contains("."))
+                    {
+                        var funcString = x.Function.Trim(new char[] { '.', ' ' });
+                        var possibleEvent = funcString.Split('.').Last();
+                        if (fieldEvents.Contains(possibleEvent) || componentEvents.Contains(possibleEvent) || compRecordEvents.Contains(possibleEvent))
+                        {
+                            var funcParts = funcString.Split('.');
+                            if (funcParts.Length == 5)
+                            {
+                                if (CompRecFieldRoot == null)
+                                {
+                                    CompRecFieldRoot = ppcObjectTree.Nodes.Add("Component Record Field");
+                                }
+                                var parentNode = CompRecFieldRoot;
+                                /* component rec field */
+                                if (CompRecFldNodeRoots.ContainsKey(x.Function) == false)
+                                {
+
+                                    for (var y = 0; y < funcParts.Length; y++)
+                                    {
+                                        var searchString = String.Join(".", funcParts, 0, y + 1);
+                                        if (CompRecFldNodeRoots.ContainsKey(searchString) == false)
+                                        {
+                                            var newNode = new TreeNode(funcParts[y]);
+                                            parentNode.Nodes.Add(newNode);
+                                            CompRecFldNodeRoots.Add(searchString, newNode);
+                                            parentNode = newNode;
+                                            if (y == funcParts.Length - 1)
+                                            {
+                                                /* this is the last one, the "event" */
+                                                newNode.Tag = x;
+                                                NodeCounts.Add(newNode, 1);
+
+                                                if (x.IsError)
+                                                {
+                                                    newNode.BackColor = Color.Red;
+                                                    var nodeParent = newNode.Parent;
+                                                    while (nodeParent != null)
+                                                    {
+                                                        nodeParent.BackColor = Color.Yellow;
+                                                        nodeParent = nodeParent.Parent;
+                                                    }
+                                                }
+                                                else if (x.Duration >= Properties.Settings.Default.LongCall && newNode.BackColor != Color.Yellow)
+                                                {
+                                                    newNode.BackColor = Color.LightGreen;
+                                                    var nodeParent = newNode.Parent;
+                                                    while (nodeParent != null)
+                                                    {
+                                                        nodeParent.BackColor = newNode.BackColor;
+                                                        nodeParent = nodeParent.Parent;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            parentNode = CompRecFldNodeRoots[searchString];
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    NodeCounts[CompRecFldNodeRoots[x.Function]] = NodeCounts[CompRecFldNodeRoots[x.Function]] + 1;
+                                }
+
+
+                            }
+                            else if (funcParts.Length == 3)
+                            {
+                                bool isFunc = false;
+                                if (funcParts[0].Contains(" "))
+                                {
+                                    /* they put the method first... lets put it at the end */
+                                    var methodName = funcParts[0].Split(' ')[0];
+                                    var recordName = funcParts[0].Split(' ')[1];
+
+                                    var newFuncParts = new string[funcParts.Length + 1];
+                                    newFuncParts[0] = recordName;
+                                    for (var y = 1; y < funcParts.Length; y++)
+                                    {
+                                        newFuncParts[y] = funcParts[y];
+                                    }
+                                    newFuncParts[newFuncParts.Length - 1] = methodName;
+                                    funcParts = newFuncParts;
+                                    isFunc = true;
+                                }
+                                TreeNode activeRoot = null;
+                                Dictionary<string, TreeNode> activeRoots = null;
+                                if (isFunc)
+                                {
+                                    /* record func */
+                                    if (RecFuncRoot == null)
+                                    {
+                                        RecFuncRoot = ppcObjectTree.Nodes.Add("Record Functions");
+                                    }
+                                    activeRoot = RecFuncRoot;
+                                    activeRoots = RecFuncNodeRoots;
+                                }
+                                else
+                                {
+                                    /* record field */
+                                    if (RecFieldRoot == null)
+                                    {
+                                        RecFieldRoot = ppcObjectTree.Nodes.Add("Record Field");
+                                    }
+                                    activeRoot = RecFieldRoot;
+                                    activeRoots = RecFldNodeRoots;
+                                }
+
+
+                                var parentNode = activeRoot;
+                                /* component rec field */
+                                if (activeRoots.ContainsKey(x.Function) == false)
+                                {
+
+                                    for (var y = 0; y < funcParts.Length; y++)
+                                    {
+                                        var searchString = String.Join(".", funcParts, 0, y + 1);
+                                        if (activeRoots.ContainsKey(searchString) == false)
+                                        {
+                                            var newNode = new TreeNode(funcParts[y]);
+                                            parentNode.Nodes.Add(newNode);
+                                            if (isFunc && y == funcParts.Length - 1)
+                                            {
+                                                activeRoots.Add(x.Function, newNode);
+                                            }
+                                            else
+                                            {
+                                                activeRoots.Add(searchString, newNode);
+                                            }
+                                            parentNode = newNode;
+                                            if (y == funcParts.Length - 1)
+                                            {
+                                                /* this is the last one, the "event" */
+                                                newNode.Tag = x;
+                                                NodeCounts.Add(newNode, 1);
+
+                                                if (x.IsError)
+                                                {
+                                                    newNode.BackColor = Color.Red;
+                                                    var nodeParent = newNode.Parent;
+                                                    while (nodeParent != null)
+                                                    {
+                                                        nodeParent.BackColor = Color.Yellow;
+                                                        nodeParent = nodeParent.Parent;
+                                                    }
+                                                }
+                                                else if (x.Duration >= Properties.Settings.Default.LongCall && newNode.BackColor != Color.Yellow)
+                                                {
+                                                    newNode.BackColor = Color.LightGreen;
+                                                    var nodeParent = newNode.Parent;
+                                                    while (nodeParent != null)
+                                                    {
+                                                        nodeParent.BackColor = newNode.BackColor;
+                                                        nodeParent = nodeParent.Parent;
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            parentNode = activeRoots[searchString];
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    NodeCounts[activeRoots[x.Function]] = NodeCounts[activeRoots[x.Function]] + 1;
+                                }
+
+                            }
+                            else
+                            {
+                                MessageBox.Show("Encountered an unsupported type of PPC call: " + x.Function + " Please report this on Trace Wizard's github issues.");
+                            }
+                        }
+                    }
+                }
+            }
+            /* update the node counts */
+            var nodesToPropagate = NodeCounts.Keys.ToList();
+
+            for (var x = 0; x < nodesToPropagate.Count; x++)
+            {
+                var node = nodesToPropagate[x];
+                if (node.Parent == null)
+                {
+                    continue;
+                }
+                if (NodeCounts.ContainsKey(node.Parent))
+                {
+                    NodeCounts[node.Parent] = NodeCounts[node.Parent] + NodeCounts[node];
+                } else
+                {
+                    NodeCounts.Add(node.Parent, NodeCounts[node]);
+                    if (node.Parent != null)
+                    {
+                        nodesToPropagate.Add(node.Parent);
+                    }
+                }
+            }
+
+            foreach (TreeNode node in NodeCounts.Keys.ToList())
+            {
+                node.Text += " - " + NodeCounts[node] + (NodeCounts[node] == 1 ? " call" : " calls");
+            }
+        }
+
         public static void BuildFromSQLList(ListView view, List<SQLByFrom> sqls)
         {
             view.BeginUpdate();
@@ -358,7 +708,7 @@ namespace TraceWizard.UI
                     } else
                     {
                         /* only color yellow in Diff mode if there was a MODIFIED */
-                        if (exec.DiffStatus == DiffStatus.MODIFIED)
+                if (exec.DiffStatus == DiffStatus.MODIFIED)
                         {
                             ctxNode.BackColor = Color.Yellow;
                         }

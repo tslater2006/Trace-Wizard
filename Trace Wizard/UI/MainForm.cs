@@ -57,7 +57,10 @@ namespace TraceWizard
             HttpWebRequest req = WebRequest.CreateHttp("https://github.com/tslater2006/Trace-Wizard/releases/latest");
             req.AllowAutoRedirect = false;
             var resp = (HttpWebResponse)req.GetResponse();
-            var latestVersion = double.Parse(resp.Headers["Location"].Split('/').Last());
+            var versionString = resp.Headers["Location"].Split('/').Last();
+            var versionParts = versionString.Split('.');
+
+            var latestVersion = double.Parse(versionParts[0] + "." + versionParts[1]);
             if (latestVersion > Version)
             {
                 var result = MessageBox.Show($"Version {latestVersion} is available for download on GitHub. Would you like to go there now?", "New Version Available", MessageBoxButtons.YesNo);
@@ -221,6 +224,7 @@ namespace TraceWizard
                 return;
             }
             UIBuilder.BuildExecutionTree(traceData, executionTree, SQLMapToTree, ExecCallToTree);
+            UIBuilder.BuildPPCObjectList(traceData, ppcObjectTree);
             sortAscending = true;
 
             switch (currentSQLDisplay)
@@ -661,6 +665,11 @@ namespace TraceWizard
 
         private void SearchExecutionCalls(TreeView tree, string searchText)
         {
+            bool onlyError = searchText.Contains("has:error");
+            if (onlyError)
+            {
+                searchText = searchText.Replace("has:error", "").Trim();
+            }
             /* ToDo: Alternate search mechanism for mono */
             if (Type.GetType("Mono.Runtime") != null)
             {
@@ -670,14 +679,22 @@ namespace TraceWizard
             tree.BeginUpdate();
             tree.Nodes.Clear();
             UIBuilder.BuildExecutionTree(traceData, executionTree, SQLMapToTree, ExecCallToTree);
-            if (searchText.Trim().Length == 0)
+            if (searchText.Trim().Length == 0 && onlyError == false)
             {
                 tree.EndUpdate();
                 return;
             }
             var searchTextLower = searchText.ToLower();
 
-            var matches = traceData.AllExecutionCalls.Where(c => (c.StartLine + c.Function).ToLower().Contains(searchTextLower)).ToList();
+            List<ExecutionCall> matches = new List<ExecutionCall>();
+            if (onlyError)
+            {
+                matches = traceData.AllExecutionCalls.Where(c => (c.StartLine + c.Function).ToLower().Contains(searchTextLower) && c.IsError == true).ToList();
+            }
+            else
+            {
+                matches = traceData.AllExecutionCalls.Where(c => (c.StartLine + c.Function).ToLower().Contains(searchTextLower)).ToList();
+            }
 
             foreach (ExecutionCall m in matches)
             {
@@ -692,6 +709,7 @@ namespace TraceWizard
 
         private void FilterExecutionNodes(TreeView tree, string searchText)
         {
+
             Stack<TreeNode> toProcess = new Stack<TreeNode>();
             string searchTextLower = searchText.ToLower();
             foreach (TreeNode t in tree.Nodes)
@@ -702,7 +720,7 @@ namespace TraceWizard
             while (toProcess.Count > 0)
             {
                 TreeNode current = toProcess.Pop();
-                if (current.Text.ToLower().Contains(searchTextLower))
+                if (current.Text.ToLower().Contains(searchTextLower) || searchTextLower.Length == 0)
                 {
                     current.BackColor = Color.LightBlue;
 
@@ -757,6 +775,7 @@ namespace TraceWizard
                 {
                     if (t.Text.ToLower().Contains(searchText))
                     {
+
                         _found = true;
                     }
                     else
@@ -1261,6 +1280,32 @@ namespace TraceWizard
             else
             {
                 Clipboard.SetText(sb.ToString());
+            }
+        }
+
+        private void ppcObjectTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                if (e.Node?.Tag != null)
+                {
+                    try
+                    {
+                        if ((e.Node.Tag as ExecutionCall).IsError)
+                        {
+                            /* double clicked on one that is an error */
+                            var function = (e.Node.Tag as ExecutionCall).Function;
+                            mainTabStrip.SelectedTab = executionPathTab;
+                            executionPathTab.Focus();
+                            execFindBox.Visible = true;
+                            execFindBox.Text = "has:error " + function;
+                            _findBoxVisible = true;
+                            _execSearchInProgress = true;
+                            SearchExecutionCalls(executionTree, "has:error " + function);
+                        }
+                    }
+                    catch (Exception ex) { }
+                }
             }
         }
     }

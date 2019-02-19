@@ -84,12 +84,15 @@
             this.stackTraceTab = new System.Windows.Forms.TabPage();
             this.stackTraceFindBox = new System.Windows.Forms.TextBox();
             this.stackTraceListView = new System.Windows.Forms.ListView();
+            this.ppcObjectTab = new System.Windows.Forms.TabPage();
+            this.ppcObjectTree = new System.Windows.Forms.TreeView();
+            this.ppcObjectFindBox = new System.Windows.Forms.TextBox();
             this.detailsBox = new System.Windows.Forms.ListBox();
+            this.detailsContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyDetailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
-            this.detailsContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.copyDetailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.sqlItemContextStrip.SuspendLayout();
@@ -102,9 +105,10 @@
             this.executionPathTab.SuspendLayout();
             this.sqlStatementsTab.SuspendLayout();
             this.stackTraceTab.SuspendLayout();
+            this.ppcObjectTab.SuspendLayout();
+            this.detailsContextStrip.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
-            this.detailsContextStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -471,6 +475,7 @@
             this.mainTabStrip.Controls.Add(this.executionPathTab);
             this.mainTabStrip.Controls.Add(this.sqlStatementsTab);
             this.mainTabStrip.Controls.Add(this.stackTraceTab);
+            this.mainTabStrip.Controls.Add(this.ppcObjectTab);
             this.mainTabStrip.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTabStrip.Location = new System.Drawing.Point(0, 0);
             this.mainTabStrip.Name = "mainTabStrip";
@@ -606,6 +611,37 @@
             this.stackTraceListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.stackTraceListView_KeyDown);
             this.stackTraceListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.stackTraceListView_MouseDoubleClick);
             // 
+            // ppcObjectTab
+            // 
+            this.ppcObjectTab.Controls.Add(this.ppcObjectTree);
+            this.ppcObjectTab.Controls.Add(this.ppcObjectFindBox);
+            this.ppcObjectTab.Location = new System.Drawing.Point(4, 22);
+            this.ppcObjectTab.Name = "ppcObjectTab";
+            this.ppcObjectTab.Padding = new System.Windows.Forms.Padding(3);
+            this.ppcObjectTab.Size = new System.Drawing.Size(1022, 350);
+            this.ppcObjectTab.TabIndex = 4;
+            this.ppcObjectTab.Text = "PeopleCode Objects";
+            this.ppcObjectTab.UseVisualStyleBackColor = true;
+            // 
+            // ppcObjectTree
+            // 
+            this.ppcObjectTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ppcObjectTree.HideSelection = false;
+            this.ppcObjectTree.Location = new System.Drawing.Point(3, 3);
+            this.ppcObjectTree.Name = "ppcObjectTree";
+            this.ppcObjectTree.Size = new System.Drawing.Size(1016, 324);
+            this.ppcObjectTree.TabIndex = 5;
+            this.ppcObjectTree.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.ppcObjectTree_NodeMouseDoubleClick);
+            // 
+            // ppcObjectFindBox
+            // 
+            this.ppcObjectFindBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.ppcObjectFindBox.Location = new System.Drawing.Point(3, 327);
+            this.ppcObjectFindBox.Name = "ppcObjectFindBox";
+            this.ppcObjectFindBox.Size = new System.Drawing.Size(1016, 20);
+            this.ppcObjectFindBox.TabIndex = 4;
+            this.ppcObjectFindBox.Visible = false;
+            // 
             // detailsBox
             // 
             this.detailsBox.ContextMenuStrip = this.detailsContextStrip;
@@ -616,6 +652,20 @@
             this.detailsBox.Name = "detailsBox";
             this.detailsBox.Size = new System.Drawing.Size(1030, 92);
             this.detailsBox.TabIndex = 0;
+            // 
+            // detailsContextStrip
+            // 
+            this.detailsContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyDetailsToolStripMenuItem});
+            this.detailsContextStrip.Name = "detailsContextStrip";
+            this.detailsContextStrip.Size = new System.Drawing.Size(141, 26);
+            // 
+            // copyDetailsToolStripMenuItem
+            // 
+            this.copyDetailsToolStripMenuItem.Name = "copyDetailsToolStripMenuItem";
+            this.copyDetailsToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.copyDetailsToolStripMenuItem.Text = "Copy Details";
+            this.copyDetailsToolStripMenuItem.Click += new System.EventHandler(this.copyDetailsToolStripMenuItem_Click);
             // 
             // toolStripContainer1
             // 
@@ -633,20 +683,6 @@
             this.toolStripContainer1.Size = new System.Drawing.Size(1030, 497);
             this.toolStripContainer1.TabIndex = 2;
             this.toolStripContainer1.Text = "toolStripContainer1";
-            // 
-            // detailsContextStrip
-            // 
-            this.detailsContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyDetailsToolStripMenuItem});
-            this.detailsContextStrip.Name = "detailsContextStrip";
-            this.detailsContextStrip.Size = new System.Drawing.Size(181, 48);
-            // 
-            // copyDetailsToolStripMenuItem
-            // 
-            this.copyDetailsToolStripMenuItem.Name = "copyDetailsToolStripMenuItem";
-            this.copyDetailsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.copyDetailsToolStripMenuItem.Text = "Copy Details";
-            this.copyDetailsToolStripMenuItem.Click += new System.EventHandler(this.copyDetailsToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -680,10 +716,12 @@
             this.sqlStatementsTab.PerformLayout();
             this.stackTraceTab.ResumeLayout(false);
             this.stackTraceTab.PerformLayout();
+            this.ppcObjectTab.ResumeLayout(false);
+            this.ppcObjectTab.PerformLayout();
+            this.detailsContextStrip.ResumeLayout(false);
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
-            this.detailsContextStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -752,6 +790,9 @@
         private System.Windows.Forms.SaveFileDialog saveFileDialog3;
         private System.Windows.Forms.ContextMenuStrip detailsContextStrip;
         private System.Windows.Forms.ToolStripMenuItem copyDetailsToolStripMenuItem;
+        private System.Windows.Forms.TabPage ppcObjectTab;
+        private System.Windows.Forms.TreeView ppcObjectTree;
+        private System.Windows.Forms.TextBox ppcObjectFindBox;
     }
 }
 

@@ -25,8 +25,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using TraceWizard.Data;
 
 namespace TraceWizard.Processors
@@ -123,6 +125,7 @@ namespace TraceWizard.Processors
         public void ProcessorInit(TraceData data)
         {
             Statements = data.SQLStatements;
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
         }
 
         public void ProcessorComplete(TraceData td)

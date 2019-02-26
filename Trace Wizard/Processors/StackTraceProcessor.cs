@@ -24,7 +24,9 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Threading;
 using TraceWizard.Data;
 
 namespace TraceWizard.Processors
@@ -38,6 +40,7 @@ namespace TraceWizard.Processors
 
         public void ProcessorInit(TraceData data)
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
             StackTraces = data.StackTraces;
         }
 

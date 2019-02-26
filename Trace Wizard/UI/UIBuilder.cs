@@ -256,10 +256,12 @@ namespace TraceWizard.UI
             TreeNode AppClassRoot = ppcObjectTree.Nodes.Add("Application Classes");
             TreeNode PageRoot = null;
             TreeNode CompRecFieldRoot = null;
+            TreeNode CompRecRoot = null;
             TreeNode RecFieldRoot = null;
             TreeNode RecFuncRoot = null;
             Dictionary<string, TreeNode> ClassNodeRoots = new Dictionary<string, TreeNode>();
             Dictionary<string, TreeNode> PageNodeRoots = new Dictionary<string, TreeNode>();
+            Dictionary<string, TreeNode> CompRecNodeRoots = new Dictionary<string, TreeNode>();
             Dictionary<string, TreeNode> CompRecFldNodeRoots = new Dictionary<string, TreeNode>();
             Dictionary<string, TreeNode> RecFldNodeRoots = new Dictionary<string, TreeNode>();
             Dictionary<string, TreeNode> RecFuncNodeRoots = new Dictionary<string, TreeNode>();
@@ -384,7 +386,6 @@ namespace TraceWizard.UI
                     var fieldEvents = new string[] { "FieldDefault", "FieldFormula", "FieldChange", "FieldEdit", "SaveEdit", "RowInit", "SavePreChange", "SavePostChange", "RowSelect", "RowInsert", "RowDelete", "SearchInit", "SearchSave", "Workflow", "PrePopup" };
                     var componentEvents = new string[] { "PreBuild", "PostBuild", "SavePreChange", "SavePostChange", "Workflow" };
                     var compRecordEvents = new string[] { "RowInit", "RowInsert", "RowDelete", "RowSelect", "SaveEdit", "SavePostChange", "SavePreChange" };
-
                     /* get the tail end of the function */
                     if (x.Function.Contains("."))
                     {
@@ -393,25 +394,40 @@ namespace TraceWizard.UI
                         if (fieldEvents.Contains(possibleEvent) || componentEvents.Contains(possibleEvent) || compRecordEvents.Contains(possibleEvent))
                         {
                             var funcParts = funcString.Split('.');
-                            if (funcParts.Length == 5)
+                            if (funcParts.Length == 5 || funcParts.Length == 4)
                             {
-                                if (CompRecFieldRoot == null)
+                                TreeNode parentNode = null;
+                                Dictionary<string, TreeNode> rootsDict = null;
+                                if (funcParts.Length == 5 )
                                 {
-                                    CompRecFieldRoot = ppcObjectTree.Nodes.Add("Component Record Field");
+                                    if (CompRecFieldRoot == null)
+                                    {
+                                        CompRecFieldRoot = ppcObjectTree.Nodes.Add("Component Record Field");
+                                    }
+                                    parentNode = CompRecFieldRoot;
+                                    rootsDict = CompRecFldNodeRoots;
                                 }
-                                var parentNode = CompRecFieldRoot;
-                                /* component rec field */
-                                if (CompRecFldNodeRoots.ContainsKey(x.Function) == false)
+                                if (funcParts.Length == 4)
                                 {
-
+                                    if (CompRecRoot == null)
+                                    {
+                                        CompRecRoot = ppcObjectTree.Nodes.Add("Component Record");
+                                    }
+                                    parentNode = CompRecRoot;
+                                    rootsDict = CompRecNodeRoots;
+                                }
+                                
+                                /* component rec field */
+                                if (rootsDict.ContainsKey(x.Function) == false)
+                                {
                                     for (var y = 0; y < funcParts.Length; y++)
                                     {
                                         var searchString = String.Join(".", funcParts, 0, y + 1);
-                                        if (CompRecFldNodeRoots.ContainsKey(searchString) == false)
+                                        if (rootsDict.ContainsKey(searchString) == false)
                                         {
                                             var newNode = new TreeNode(funcParts[y]);
                                             parentNode.Nodes.Add(newNode);
-                                            CompRecFldNodeRoots.Add(searchString, newNode);
+                                            rootsDict.Add(searchString, newNode);
                                             parentNode = newNode;
                                             if (y == funcParts.Length - 1)
                                             {
@@ -443,18 +459,19 @@ namespace TraceWizard.UI
                                         }
                                         else
                                         {
-                                            parentNode = CompRecFldNodeRoots[searchString];
+                                            parentNode = rootsDict[searchString];
                                         }
                                     }
 
                                 }
                                 else
                                 {
-                                    NodeCounts[CompRecFldNodeRoots[x.Function]] = NodeCounts[CompRecFldNodeRoots[x.Function]] + 1;
+                                    NodeCounts[rootsDict[x.Function]] = NodeCounts[rootsDict[x.Function]] + 1;
                                 }
 
 
                             }
+                            
                             else if (funcParts.Length == 3)
                             {
                                 bool isFunc = false;

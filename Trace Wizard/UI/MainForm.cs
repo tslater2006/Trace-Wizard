@@ -1308,6 +1308,54 @@ namespace TraceWizard
                 }
             }
         }
+
+        private void viewToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            if (mainTabStrip.SelectedTab == executionPathTab)
+            {
+                /* enable execution path items */
+                execUnfoldAllMenuItem.Visible = true;
+                execGoToSlowestToolStripMenuItem.Visible = true;
+                sQLToolStripMenuItem.Visible = false;
+            } else
+            {
+                execUnfoldAllMenuItem.Visible = false;
+                execGoToSlowestToolStripMenuItem.Visible = false;
+                sQLToolStripMenuItem.Visible = true;
+            }
+        }
+
+        private void execUnfoldAllMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(this, "Expanding traces containing a large number of nodes can cause performance issues and even hanging of the application. Do you want to continue?", "Large Trace Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                executionTree.ExpandAll();
+            }
+        }
+
+        private void execGoToSlowestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            /* find the slowest call */
+            double slowest = 0;
+            ExecutionCall slowestCall = null;
+            foreach (var call in traceData.AllExecutionCalls)
+            {
+                if (call.Duration > slowest)
+                {
+                    slowest = call.Duration;
+                    slowestCall = call;
+                }
+            }
+            var treeNode = ExecCallToTree[slowestCall];
+            while (treeNode.Parent != null)
+            {
+                treeNode.Expand();
+                treeNode = treeNode.Parent;
+            }
+
+            executionTree.SelectedNode = ExecCallToTree[slowestCall];
+            //traceData.AllExecutionCalls.
+        }
     }
 
     enum SQLDisplayType

@@ -440,8 +440,10 @@ namespace TraceWizard.Processors
                     }
                 }
             }
-
-            td.MaxCallDepth = contextMap.Values.Max(m=>m._maxCallDepth);
+            if (contextMap.Values.Count > 0)
+            {
+                td.MaxCallDepth = contextMap.Values.Max(m => m._maxCallDepth);
+            }
 
             td.Statistics.Add(new StatisticItem() { Category = "Execution Path", Label = "Maximum Call Depth", Value = td.MaxCallDepth.ToString() });
             td.Statistics.Add(new StatisticItem() { Category = "Execution Path", Label = "Total Calls", Value = contextMap.Values.Sum(c=>c._ppcCodeCallCount).ToString() });

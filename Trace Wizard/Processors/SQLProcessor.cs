@@ -68,6 +68,10 @@ namespace TraceWizard.Processors
                 currentStatement.Context = context;
                 currentStatement.RCNumber = int.Parse(m.Groups[1].Value);
                 currentStatement.LineNumber = lineNumber;
+
+                /* AET TRC files don't have explicit Exec statements, so set the Exec time from the COM Stmt line's Duration */
+                /* this will be overwritten in case we are in a tracesql file by the subsequent Exec statement */
+                currentStatement.ExecTime = double.Parse(m.Groups[2].Value);
                 return;
             }
 

@@ -119,7 +119,7 @@ namespace TraceWizard
         TraceData traceData;
         Stopwatch sw = new Stopwatch();
         SQLDisplayType currentSQLDisplay;
-        TraceProcessor processor = null;
+        BackgroundWorker processor = null;
 
         Dictionary<SQLStatement, TreeNode> SQLMapToTree = new Dictionary<SQLStatement, TreeNode>();
         Dictionary<ExecutionCall, TreeNode> ExecCallToTree = new Dictionary<ExecutionCall, TreeNode>();
@@ -149,7 +149,7 @@ namespace TraceWizard
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz";
+            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz;*.trc";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
 
@@ -183,15 +183,19 @@ namespace TraceWizard
                 }
                 else
                 {
-                    processor = new TraceProcessor(filename);
-                    processor.WorkerReportsProgress = true;
-                    processor.WorkerSupportsCancellation = true;
+                    var fileExtension = new FileInfo(filename).Extension.ToLower();
+                    if (fileExtension.Equals(".tracesql") || fileExtension.Equals(".trc"))
+                    {
+                        processor = new TraceSQLProcessor(filename);
+                        processor.WorkerReportsProgress = true;
+                        processor.WorkerSupportsCancellation = true;
 
-                    processor.ProgressChanged += Processor_ProgressChanged;
-                    processor.RunWorkerCompleted += Processor_RunWorkerCompleted;
-                    sw.Reset();
-                    sw.Start();
-                    processor.RunWorkerAsync();
+                        processor.ProgressChanged += Processor_ProgressChanged;
+                        processor.RunWorkerCompleted += Processor_RunWorkerCompleted;
+                        sw.Reset();
+                        sw.Start();
+                        processor.RunWorkerAsync();
+                    }
                 }
             }
         }

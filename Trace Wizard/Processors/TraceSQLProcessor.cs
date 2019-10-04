@@ -31,12 +31,12 @@ using TraceWizard.Data;
 
 namespace TraceWizard.Processors
 {
-    public class TraceProcessor : BackgroundWorker
+    public class TraceSQLProcessor : BackgroundWorker
     {
         string _file;
         private TraceData Data = new TraceData();
 
-        public TraceProcessor(string filename)
+        public TraceSQLProcessor(string filename)
         {
             _file = filename;
             this.DoWork += TraceProcessor_DoWork;
@@ -84,7 +84,6 @@ namespace TraceWizard.Processors
                     }                    
                 }
             }
-
             foreach (ITraceProcessor proc in Processors)
             {
                 proc.ProcessorComplete(Data);

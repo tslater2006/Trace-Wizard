@@ -18,8 +18,8 @@ namespace TraceWizard.UI
     {
         TraceData leftData;
         TraceData rightData;
-        TraceProcessor leftProcessor;
-        TraceProcessor rightProcessor;
+        TraceSQLProcessor leftProcessor;
+        TraceSQLProcessor rightProcessor;
 
         Dictionary<SQLStatement, TreeNode> SQLMap = new Dictionary<SQLStatement, TreeNode>();
         Dictionary<ExecutionCall, TreeNode> ExecMap = new Dictionary<ExecutionCall, TreeNode>();
@@ -81,7 +81,7 @@ namespace TraceWizard.UI
                 }
                 else
                 {
-                    leftProcessor = new TraceProcessor(filename);
+                    leftProcessor = new TraceSQLProcessor(filename);
                     leftProcessor.WorkerReportsProgress = true;
                     leftProcessor.WorkerSupportsCancellation = true;
 
@@ -159,7 +159,7 @@ namespace TraceWizard.UI
                 }
                 else
                 {
-                    rightProcessor = new TraceProcessor(filename);
+                    rightProcessor = new TraceSQLProcessor(filename);
                     rightProcessor.WorkerReportsProgress = true;
                     rightProcessor.WorkerSupportsCancellation = true;
 

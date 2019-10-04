@@ -126,7 +126,7 @@
     <Compile Include="Processors\ExecutionPathProcessor.cs" />
     <Compile Include="Processors\ITraceProcessor.cs" />
     <Compile Include="Processors\SQLProcessor.cs" />
-    <Compile Include="Processors\TraceProcessor.cs">
+    <Compile Include="Processors\TraceSQLProcessor.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Program.cs" />

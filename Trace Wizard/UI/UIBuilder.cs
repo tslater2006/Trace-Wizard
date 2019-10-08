@@ -732,7 +732,10 @@ namespace TraceWizard.UI
                     }
                     UIBuilder.BuildExecutionTree(ctxNode, exec,SQLMapToTree, ExecCallToTree, showLoading,diffMode);
                 }
-                ctxNode.Text += " Dur: " + contextTotalTime;
+                if (rootExecCalls.First().Type.HasFlag(ExecutionCallType.AE) == false)
+                {
+                    ctxNode.Text += " Dur: " + contextTotalTime;
+                }
                 totalTraceTime += contextTotalTime;
             }
             foreach (var node in contextNodeList)
@@ -789,8 +792,15 @@ namespace TraceWizard.UI
             }
             else
             {
-                newRoot = root.Nodes.Add(call.Function + "  Dur: " + (call.Duration));
+                newRoot = root.Nodes.Add(call.Function + (call.Type.HasFlag(ExecutionCallType.AE) ? "" : "  Dur: " + (call.Duration)));
                 ExecCallToTree.Add(call, newRoot);
+
+                if (call.Type.HasFlag(ExecutionCallType.SQL) && call.SQLStatement != null)
+                {
+                    SQLMapToTree.Add(call.SQLStatement, newRoot);
+                    newRoot.Tag = call;
+                }
+
                 if (!diffMode)
                 {
                     if (call.HasError)

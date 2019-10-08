@@ -50,7 +50,7 @@ namespace TraceWizard.Processors
         internal long _ppcExceptionCount;
         internal bool ParsingReturnStack;
         internal bool ReturnStackIsClass;
-
+        internal long _aeStepCount;
         internal string ReturnStackClassName = null;
         internal string ReturnStackClassMethod = null;
         internal ExecutionCall ReturnStackCall = null;
@@ -356,6 +356,106 @@ namespace TraceWizard.Processors
                 ParsingReturnValue = false;
                 ResetReturnStack();
             }
+        }
+
+        internal void ProcessAECall(Match match, long lineNumber)
+        {
+            var timeStamp = match.Groups[1].Value;
+            var indent = match.Groups[2].Value.Length;
+            var program = match.Groups[3].Value;
+            var section = match.Groups[4].Value;
+            var step = match.Groups[5].Value;
+            var action = match.Groups[6].Value;
+
+            ExecutionCallType callType;
+
+            switch(action)
+            {
+                case "Do When":
+                    callType = ExecutionCallType.SQL | ExecutionCallType.AE_DOWHEN;
+                    break;
+                case "Do While":
+                    callType = ExecutionCallType.SQL | ExecutionCallType.AE_DOWHILE;
+                    break;
+                case "Do Select":
+                    callType = ExecutionCallType.SQL | ExecutionCallType.AE_DOSELECT;
+                    break;
+                case "PeopleCode":
+                    callType = ExecutionCallType.AE_PPC;
+                    break;
+                case "SQL":
+                    callType = ExecutionCallType.SQL | ExecutionCallType.AE_SQL;
+                    break;
+                case "Call Section":
+                    callType = ExecutionCallType.AE_CALL;
+                    break;
+                case "Log Message":
+                    callType = ExecutionCallType.AE_LOGMSG;
+                    break;
+                case "Do Until":
+                    callType = ExecutionCallType.SQL | ExecutionCallType.AE_DOUNTIL;
+                    break;
+                default:
+                    callType = ExecutionCallType.NORMAL;
+                    break;
+            }
+            callType |= ExecutionCallType.AE;
+
+            var call = new ExecutionCall() {
+                Context = ContextID,
+                Type = callType,
+                StartLine = lineNumber,
+                AE_Program = program,
+                AE_Section = section,
+                AE_Step = step,
+                AE_Action = action,
+                Function = program + "." + section + "." + step + " (" + action + ")",
+                indentCount = indent
+            };
+            allCalls.Add(call);
+            call.Duration = 0;
+
+            _aeStepCount++;
+            if (callType == ExecutionCallType.AE_PPC)
+            {
+                _ppcCodeCallCount++;
+            }
+
+            if (callChain.Count > 0 && callChain.Peek().indentCount == call.indentCount)
+            {
+                var popped = callChain.Pop();
+                if (popped.StopLine == 0)
+                {
+                    popped.StopLine = lineNumber;
+                }
+                lastPopped = popped;
+            }
+
+            if (callChain.Count > 0 && (callChain.Peek().Type == ExecutionCallType.AE_CALL || call.indentCount < callChain.Peek().indentCount))
+            {
+                while (callChain.Count > 0 && callChain.Peek().indentCount >= call.indentCount)
+                {
+                    var popped = callChain.Pop();
+                    if (popped.StopLine == 0)
+                    {
+                        popped.StopLine = lineNumber;
+                    }
+                    lastPopped = popped;
+                }
+            }
+
+            if (callChain.Count > 0)
+            {
+                callChain.Peek().Children.Add(call);
+                call.Parent = callChain.Peek();
+            }
+            if (callChain.Count == 0)
+            {
+                executionCalls.Add(call);
+            }
+            callChain.Push(call);
+
+            //throw new NotImplementedException();
         }
     }
 

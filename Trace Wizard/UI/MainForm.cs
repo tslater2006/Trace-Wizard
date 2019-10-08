@@ -25,6 +25,7 @@
 
 //TODO: Fix the code for navigating to a stacktrace, because TreeView is lazyloaded the node may not exist yet.
 
+using BasicSQLFormatter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,6 +37,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using TraceWizard.Data;
 using TraceWizard.Data.Serialization;
@@ -149,7 +151,7 @@ namespace TraceWizard
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz;*.trc";
+            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz;*.trc;*.aet";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
 
@@ -172,8 +174,8 @@ namespace TraceWizard
                         traceData = new TraceDeserializer().DeserializeTraceData(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.None));
                         UpdateUI();
                         sw.Stop();
-
-                        MessageBox.Show("Trace data loaded in " + sw.Elapsed.TotalSeconds + " seconds.");
+                        detailsBox.Items.Clear();
+                        detailsBox.Items.Add("Trace data loaded in " + sw.Elapsed.TotalSeconds + " seconds.");
                         sw.Reset();
                     }
                     else
@@ -187,6 +189,18 @@ namespace TraceWizard
                     if (fileExtension.Equals(".tracesql") || fileExtension.Equals(".trc"))
                     {
                         processor = new TraceSQLProcessor(filename);
+                        processor.WorkerReportsProgress = true;
+                        processor.WorkerSupportsCancellation = true;
+
+                        processor.ProgressChanged += Processor_ProgressChanged;
+                        processor.RunWorkerCompleted += Processor_RunWorkerCompleted;
+                        sw.Reset();
+                        sw.Start();
+                        processor.RunWorkerAsync();
+                    }
+                    else if (fileExtension.Equals(".aet"))
+                    {
+                        processor = new AETTraceProcessor(filename);
                         processor.WorkerReportsProgress = true;
                         processor.WorkerSupportsCancellation = true;
 
@@ -215,7 +229,9 @@ namespace TraceWizard
             UpdateUI();
             sw.Stop();
 
-            MessageBox.Show("Trace file processed in " + sw.Elapsed.TotalSeconds + " seconds.");
+            detailsBox.Items.Clear();
+            detailsBox.Items.Add("Trace data loaded in " + sw.Elapsed.TotalSeconds + " seconds.");
+
             sw.Reset();
             System.GC.Collect();
         }
@@ -932,14 +948,12 @@ namespace TraceWizard
 
             if (IsRunningOSX)
             {
-                OSXClipboard.CopyToClipboard(sqlStatement.Statement);
+                OSXClipboard.CopyToClipboard(new SQLFormatter(sqlStatement.Statement).Format());
             }
             else
             {
-                Clipboard.SetText(sqlStatement.Statement);
+                Clipboard.SetText(new SQLFormatter(sqlStatement.Statement).Format());
             }
-
-            MessageBox.Show("SQL Statement copied to clipboard.");
         }
 
         private void copyBindsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -990,11 +1004,29 @@ namespace TraceWizard
             }
             var item = executionTree.SelectedNode;
 
-            /*if (item.Tag.GetType().Equals(typeof(ExecutionCall)) == false)
+
+
+            if (item.Tag.GetType().Equals(typeof(ExecutionCall)))
             {
-                e.Cancel = true;
-                return;
-            }*/
+                ExecutionCall selectedCall = (ExecutionCall)item.Tag;
+                if (selectedCall.Type.HasFlag(ExecutionCallType.AE))
+                {
+                    showAEBuffer.Visible = true;
+
+                    if (selectedCall.SQLStatement != null)
+                    {
+                        copySQLStatementToolStripMenuItem.Visible = true;
+                    }
+                    else
+                    {
+                        copySQLStatementToolStripMenuItem.Visible = false;
+                    }
+                }
+                else
+                {
+                    showAEBuffer.Visible = false;
+                }
+            }
         }
 
         private void copyStackTraceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1234,7 +1266,13 @@ namespace TraceWizard
                 foreach (var stmt in traceData.SQLStatements.OrderBy(s => s.LineNumber))
                 {
                     string sqlText = ResolveSQLStatement(stmt);
-                    if (sqlText.ToUpper().StartsWith("SELECT") == false)
+                    if (sqlText.StartsWith("%Select"))
+                    {
+                        /* Need to comment out the %Select() portion */
+                        sqlText = sqlText.Replace("%Select", "/* %Select");
+                        sqlText = new Regex("\\)").Replace(sqlText, ") */\r\n", 1);
+                    }
+                    else if (sqlText.ToUpper().StartsWith("SELECT") == false)
                     {
                         sqlText = "-- " + sqlText;
                     }
@@ -1271,7 +1309,7 @@ namespace TraceWizard
         private void copyDetailsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var sb = new StringBuilder();
-            foreach(var line in detailsBox.Items)
+            foreach (var line in detailsBox.Items)
             {
                 sb.AppendLine(line.ToString());
             }
@@ -1321,7 +1359,8 @@ namespace TraceWizard
                 execUnfoldAllMenuItem.Visible = true;
                 execGoToSlowestToolStripMenuItem.Visible = true;
                 sQLToolStripMenuItem.Visible = false;
-            } else
+            }
+            else
             {
                 execUnfoldAllMenuItem.Visible = false;
                 execGoToSlowestToolStripMenuItem.Visible = false;
@@ -1359,6 +1398,70 @@ namespace TraceWizard
 
             executionTree.SelectedNode = ExecCallToTree[slowestCall];
             //traceData.AllExecutionCalls.
+        }
+
+        private void showAEBuffer_Click(object sender, EventArgs e)
+        {
+            var selectedCall = executionTree.SelectedNode.Tag as ExecutionCall;
+
+            if (selectedCall != null)
+            {
+                /* find index of this call compare to everything */
+                var callIndex = traceData.AllExecutionCalls.IndexOf(selectedCall);
+                Dictionary<string, string> currentBuffer = new Dictionary<string, string>();
+
+                var range = traceData.AllExecutionCalls.GetRange(0, callIndex).ToList();
+
+                var callsWithSQL = range.Where(c => c.SQLStatement != null && (c.SQLStatement.IsSelectInit || c.SQLStatement.BufferData != null)).ToList();
+
+                var sqlsWithBuffer = callsWithSQL.Select(c => c.SQLStatement);
+                foreach (var sql in sqlsWithBuffer)
+                {
+                    if (sql.IsSelectInit && sql.BufferData == null)
+                    {
+                        currentBuffer.Clear();
+                    }
+
+                    var queryBuffer = sql.GetBufferItems();
+                    foreach (var key in queryBuffer.Keys)
+                    {
+                        if (currentBuffer.ContainsKey(key))
+                        {
+                            currentBuffer[key] = queryBuffer[key];
+                        }
+                        else
+                        {
+                            currentBuffer.Add(key, queryBuffer[key]);
+                        }
+                    }
+                }
+
+                detailsBox.Items.Clear();
+                detailsBox.Items.Add("Current State Record at: " + selectedCall.Function);
+                foreach (var key in currentBuffer.Keys)
+                {
+                    detailsBox.Items.Add("  " + key + " = " + currentBuffer[key]);
+                }
+
+            }
+        }
+
+        private void copySQLStatementToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sqlStatement = (executionTree.SelectedNode.Tag as ExecutionCall).SQLStatement;
+            if (sqlStatement == null)
+            {
+                return;
+            }
+
+            if (IsRunningOSX)
+            {
+                OSXClipboard.CopyToClipboard(new SQLFormatter(sqlStatement.Statement).Format());
+            }
+            else
+            {
+                Clipboard.SetText(new SQLFormatter(sqlStatement.Statement).Format());
+            }
         }
     }
 

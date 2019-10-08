@@ -52,6 +52,11 @@ namespace TraceWizard.Data
         public string Nest = "";
         public string Function = "";
 
+        public string AE_Program = "";
+        public string AE_Section = "";
+        public string AE_Step = "";
+        public string AE_Action = "";
+
         protected double _duration;
 
         public List<string> Parameters;
@@ -151,8 +156,21 @@ namespace TraceWizard.Data
         SAME,INSERT,DELETE,MODIFIED
     }
 
+    [Flags]
     public enum ExecutionCallType
     {
-        NORMAL,EXTERNAL,CALL, SQL
+        NORMAL = 1, 
+        EXTERNAL = 2, 
+        CALL = 4, 
+        SQL = 8, 
+        AE = 16, 
+        AE_DOWHEN = 32, 
+        AE_DOWHILE = 64, 
+        AE_DOSELECT = 128, 
+        AE_PPC = 256, 
+        AE_SQL = 512, 
+        AE_CALL = 1024, 
+        AE_LOGMSG = 2048, 
+        AE_DOUNTIL = 4096
     }
 }

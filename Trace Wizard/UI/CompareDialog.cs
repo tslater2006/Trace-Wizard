@@ -11,15 +11,15 @@ using System.Windows.Forms;
 using TraceWizard.Data;
 using TraceWizard.Data.Serialization;
 using TraceWizard.Processors;
-
+using BasicSQLFormatter;
 namespace TraceWizard.UI
 {
     public partial class CompareDialog : Form
     {
         TraceData leftData;
         TraceData rightData;
-        TraceSQLProcessor leftProcessor;
-        TraceSQLProcessor rightProcessor;
+        BackgroundWorker leftProcessor;
+        BackgroundWorker rightProcessor;
 
         Dictionary<SQLStatement, TreeNode> SQLMap = new Dictionary<SQLStatement, TreeNode>();
         Dictionary<ExecutionCall, TreeNode> ExecMap = new Dictionary<ExecutionCall, TreeNode>();
@@ -44,7 +44,7 @@ namespace TraceWizard.UI
 
         private void btnOpenLeft_Click(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz";
+            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz;*.trc;*.aet";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
             if (result == DialogResult.Cancel)
@@ -81,7 +81,17 @@ namespace TraceWizard.UI
                 }
                 else
                 {
-                    leftProcessor = new TraceSQLProcessor(filename);
+
+                    var fileExtension = new FileInfo(filename).Extension.ToLower();
+
+                    if (fileExtension.Equals(".tracesql") || fileExtension.Equals(".trc"))
+                    {
+                        leftProcessor = new TraceSQLProcessor(filename);
+                    } else if (fileExtension.Equals(".aet"))
+                    {
+                        leftProcessor = new AETTraceProcessor(filename);
+                    }
+
                     leftProcessor.WorkerReportsProgress = true;
                     leftProcessor.WorkerSupportsCancellation = true;
 
@@ -122,7 +132,7 @@ namespace TraceWizard.UI
         private void btnOpenRight_Click(object sender, EventArgs e)
         {
             
-            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz";
+            openFileDialog1.Filter = "Trace Files|*.tracesql;*.twiz;*.trc;*.aet";
             openFileDialog1.FileName = "";
             var result = openFileDialog1.ShowDialog();
             if (result == DialogResult.Cancel)
@@ -159,7 +169,17 @@ namespace TraceWizard.UI
                 }
                 else
                 {
-                    rightProcessor = new TraceSQLProcessor(filename);
+                    var fileExtension = new FileInfo(filename).Extension.ToLower();
+
+                    if (fileExtension.Equals(".tracesql") || fileExtension.Equals(".trc"))
+                    {
+                        rightProcessor = new TraceSQLProcessor(filename);
+                    }
+                    else if (fileExtension.Equals(".aet"))
+                    {
+                        rightProcessor = new AETTraceProcessor(filename);
+                    }
+                    
                     rightProcessor.WorkerReportsProgress = true;
                     rightProcessor.WorkerSupportsCancellation = true;
 
@@ -221,7 +241,7 @@ namespace TraceWizard.UI
                     
                 }
                 /* Context level was clicked */
-            } else
+                } else
             {
                 if (node.Checked)
                 {

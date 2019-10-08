@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TraceWizard</RootNamespace>
     <AssemblyName>Trace Wizard</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -68,6 +68,9 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BasicSQLFormatter, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BasicSQLFormatter.1.0.2\lib\netstandard2.0\BasicSQLFormatter.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -94,6 +97,11 @@
     <Compile Include="Data\Serialization\TraceSerializer.cs" />
     <Compile Include="Diff\Diff.cs" />
     <Compile Include="Diff\PathDiff.cs" />
+    <Compile Include="Processors\AETExecutionPathProcessor.cs" />
+    <Compile Include="Processors\AETSQLProcessor.cs" />
+    <Compile Include="Processors\AETTraceProcessor.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -159,6 +167,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\CompareResult.resx">
       <DependentUpon>CompareResult.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -182,6 +191,7 @@
     <EmbeddedResource Include="UI\SQLViewer.resx">
       <DependentUpon>SQLViewer.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

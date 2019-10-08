@@ -49,6 +49,15 @@ namespace TraceWizard.Data
                 return ExecTime + FetchTime;
             }
         }
+
+        public bool IsSelectInit
+        {
+            get
+            {
+                return Statement.StartsWith("%SelectInit");
+            }
+        }
+
         public ExecutionCall ParentCall;
         public int FetchCount;
         public string SQLID;
@@ -65,6 +74,7 @@ namespace TraceWizard.Data
         
         public int RCNumber;
         public List<SQLBindValue> BindValues = new List<SQLBindValue>();
+        public List<string> BufferData = null;
         public List<String> Tables = new List<string>();
         public SQLType Type;
 
@@ -156,6 +166,39 @@ namespace TraceWizard.Data
             {
                 Tables.Add(FromClause);
             }
+        }
+        internal Dictionary<string,string> GetBufferItems()
+        {
+            Dictionary<string, string> items = new Dictionary<string, string>();
+            List<string> columns = GetBufferColumns();
+            for(var x = 0; x < columns.Count; x++)
+            {
+                items.Add(columns[x], BufferData[x]);
+            }
+            return items;
+        }
+        internal List<string> GetBufferColumns()
+        {
+            var columns = new List<string>();
+
+            /* is this a %Select type query? */
+            if (Statement.StartsWith("%Select",StringComparison.InvariantCultureIgnoreCase))
+            {
+                if (BufferData != null && BufferData.Count > 0)
+                {
+                    Regex getBufferColumns = new Regex(@"%Select(?:Init)?\((.*?)\)");
+                    var bufferCols = getBufferColumns.Match(Statement).Groups[1].Value;
+
+                    Regex colSplit = new Regex(@"([^, ]+)");
+                    foreach (Match match in colSplit.Matches(bufferCols))
+                    {
+                        columns.Add(match.Groups[1].Value);
+                    }
+                }
+            }
+
+
+            return columns;
         }
 
         private void DetermineType()

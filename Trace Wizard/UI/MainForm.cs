@@ -164,7 +164,7 @@ namespace TraceWizard
             {
                 string filename = openFileDialog1.FileName;
                 // Process the file
-
+                this.Text = "Trace Wizard - " + new FileInfo(filename).Name;
                 if (TraceDeserializer.IsSerializedData(filename))
                 {
                     if (TraceDeserializer.IsSerializedVersionSupported(filename))
@@ -181,6 +181,7 @@ namespace TraceWizard
                     else
                     {
                         MessageBox.Show("This version of Trace Wizard cannot import the serialized data, maybe it was serialized with an older version.");
+                        this.Text = "Trace Wizard ";
                     }
                 }
                 else
@@ -1462,6 +1463,11 @@ namespace TraceWizard
             {
                 Clipboard.SetText(new SQLFormatter(sqlStatement.Statement).Format());
             }
+        }
+
+        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

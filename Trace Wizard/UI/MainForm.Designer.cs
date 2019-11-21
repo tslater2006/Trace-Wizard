@@ -69,6 +69,7 @@
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.executionContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyStackTraceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copySQLStatementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showAEBuffer = new System.Windows.Forms.ToolStripMenuItem();
             this.BottomToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.TopToolStripPanel = new System.Windows.Forms.ToolStripPanel();
@@ -96,7 +97,6 @@
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
-            this.copySQLStatementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.sqlItemContextStrip.SuspendLayout();
@@ -428,7 +428,7 @@
             this.copySQLStatementToolStripMenuItem,
             this.showAEBuffer});
             this.executionContextStrip.Name = "executionContextStrip";
-            this.executionContextStrip.Size = new System.Drawing.Size(216, 92);
+            this.executionContextStrip.Size = new System.Drawing.Size(216, 70);
             this.executionContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.executionContextStrip_Opening);
             // 
             // copyStackTraceToolStripMenuItem
@@ -437,6 +437,14 @@
             this.copyStackTraceToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.copyStackTraceToolStripMenuItem.Text = "Copy Stack Trace";
             this.copyStackTraceToolStripMenuItem.Click += new System.EventHandler(this.copyStackTraceToolStripMenuItem_Click);
+            // 
+            // copySQLStatementToolStripMenuItem
+            // 
+            this.copySQLStatementToolStripMenuItem.Name = "copySQLStatementToolStripMenuItem";
+            this.copySQLStatementToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.copySQLStatementToolStripMenuItem.Text = "Copy SQL Statement";
+            this.copySQLStatementToolStripMenuItem.Visible = false;
+            this.copySQLStatementToolStripMenuItem.Click += new System.EventHandler(this.copySQLStatementToolStripMenuItem_Click);
             // 
             // showAEBuffer
             // 
@@ -559,6 +567,7 @@
             this.executionTree.TabIndex = 1;
             this.executionTree.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.executionTree_BeforeExpand);
             this.executionTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.executionTree_NodeMouseClick);
+            this.executionTree.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.executionTree_NodeMouseDoubleClick);
             this.executionTree.KeyDown += new System.Windows.Forms.KeyEventHandler(this.executionSearchKeyDown);
             // 
             // sqlStatementsTab
@@ -714,14 +723,6 @@
             this.toolStripContainer1.Size = new System.Drawing.Size(1030, 497);
             this.toolStripContainer1.TabIndex = 2;
             this.toolStripContainer1.Text = "toolStripContainer1";
-            // 
-            // copySQLStatementToolStripMenuItem
-            // 
-            this.copySQLStatementToolStripMenuItem.Name = "copySQLStatementToolStripMenuItem";
-            this.copySQLStatementToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.copySQLStatementToolStripMenuItem.Text = "Copy SQL Statement";
-            this.copySQLStatementToolStripMenuItem.Visible = false;
-            this.copySQLStatementToolStripMenuItem.Click += new System.EventHandler(this.copySQLStatementToolStripMenuItem_Click);
             // 
             // MainForm
             // 

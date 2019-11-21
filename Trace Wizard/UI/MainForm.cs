@@ -1469,6 +1469,24 @@ namespace TraceWizard
         {
 
         }
+
+        private void executionTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            var selectedItem = e.Node.Tag as ExecutionCall;
+            if (selectedItem != null && (selectedItem.Type == ExecutionCallType.SQL || selectedItem.Type == ExecutionCallType.AE_SQL)) 
+            {
+                mainTabStrip.SelectedTab = sqlStatementsTab;
+                IEnumerable<ListViewItem> lv = sqlListView.Items.Cast<ListViewItem>();
+                var viewItem = lv.Where(i => i.Tag != null && i.Tag == selectedItem.SQLStatement).FirstOrDefault();
+                if (viewItem != null)
+                {
+                    viewItem.Selected = true;
+                    sqlListView.Select();
+                    sqlListView.EnsureVisible(sqlListView.Items.IndexOf(viewItem));
+                }
+            }
+
+        }
     }
 
     enum SQLDisplayType

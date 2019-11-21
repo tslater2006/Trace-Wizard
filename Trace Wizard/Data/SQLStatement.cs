@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
@@ -151,7 +152,14 @@ namespace TraceWizard.Data
                     fromRegex = new Regex("DELETE FROM\\s*(.*?)\\s*(WHERE|$)", RegexOptions.IgnoreCase);
                     break;
             }
-            FromClause = fromRegex.Match(Statement).Groups[1].Value.Trim();
+
+            FromClause = "";
+            foreach (Match match in fromRegex.Matches(Statement))
+            {
+                FromClause += match.Groups[1].Value.Trim() + " ";
+            }
+
+            //FromClause = fromRegex.Match(Statement).Groups[1].Value.Trim();
 
             /* determine tables in the clause */
             if (Type == SQLType.SELECT)

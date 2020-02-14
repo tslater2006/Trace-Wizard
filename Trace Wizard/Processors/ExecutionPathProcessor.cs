@@ -264,7 +264,7 @@ namespace TraceWizard.Processors
                 }
                 else
                 {
-                    if (callChain.Peek().Parent.Function.StartsWith("constructor:"))
+                    if (callChain.Count > 0 && callChain.Peek().Parent != null && callChain.Peek().Parent.Function.StartsWith("constructor:"))
                     {
                         /* this is a constructor parameter? */
                         ReturnStackIsClass = true;

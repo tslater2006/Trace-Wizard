@@ -254,11 +254,13 @@ namespace TraceWizard.UI
         {
             ppcObjectTree.Nodes.Clear();
             TreeNode AppClassRoot = ppcObjectTree.Nodes.Add("Application Classes");
+            TreeNode AppEngineRoot = ppcObjectTree.Nodes.Add("Application Engines");
             TreeNode PageRoot = null;
             TreeNode CompRecFieldRoot = null;
             TreeNode CompRecRoot = null;
             TreeNode RecFieldRoot = null;
             TreeNode RecFuncRoot = null;
+            Dictionary<string, TreeNode> AENodeRoots = new Dictionary<string, TreeNode>();
             Dictionary<string, TreeNode> ClassNodeRoots = new Dictionary<string, TreeNode>();
             Dictionary<string, TreeNode> PageNodeRoots = new Dictionary<string, TreeNode>();
             Dictionary<string, TreeNode> CompRecNodeRoots = new Dictionary<string, TreeNode>();
@@ -276,69 +278,128 @@ namespace TraceWizard.UI
                 /* App Class method "writeThemeAssignmentCookieForPortal PTBR_BRANDING.BrandingManager.OnExecute" */
                 if (x.Function.EndsWith(".OnExecute"))
                 {
-                    var appClassMethodParts = x.Function.Split(' ');
-                    var appClassPackage = appClassMethodParts[1];
-                    var methodName = appClassMethodParts[0];
-                    var packageParts = appClassPackage.Split('.');
-                    /* app class */
-                    var parentNode = AppClassRoot;
-                    /* build out package nodes if needed */
-                    /* have we already built out this whole thing? */
-                    if (ClassNodeRoots.ContainsKey(x.Function) == false)
+                    if (x.Function.Contains((' ')))
                     {
-
-                        for (var y = 0; y < packageParts.Length - 1; y++)
+                        var appClassMethodParts = x.Function.Split(' ');
+                        var appClassPackage = appClassMethodParts[1];
+                        var methodName = appClassMethodParts[0];
+                        var packageParts = appClassPackage.Split('.');
+                        /* app class */
+                        var parentNode = AppClassRoot;
+                        /* build out package nodes if needed */
+                        /* have we already built out this whole thing? */
+                        if (ClassNodeRoots.ContainsKey(x.Function) == false)
                         {
-                            var searchString = String.Join(".", packageParts, 0, y + 1);
-                            if (ClassNodeRoots.ContainsKey(searchString) == false)
+
+                            for (var y = 0; y < packageParts.Length - 1; y++)
                             {
-                                var newNode = new TreeNode(packageParts[y]);
-                                parentNode.Nodes.Add(newNode);
-                                ClassNodeRoots.Add(searchString, newNode);
-                                parentNode = newNode;
+                                var searchString = String.Join(".", packageParts, 0, y + 1);
+                                if (ClassNodeRoots.ContainsKey(searchString) == false)
+                                {
+                                    var newNode = new TreeNode(packageParts[y]);
+                                    parentNode.Nodes.Add(newNode);
+                                    ClassNodeRoots.Add(searchString, newNode);
+                                    parentNode = newNode;
+                                }
+                                else
+                                {
+                                    parentNode = ClassNodeRoots[searchString];
+                                }
                             }
-                            else
+
+                            /* we've built all of the packages, now lets add the actual method node */
+                            var method = parentNode.Nodes.Add(methodName);
+                            method.Tag = x;
+                            ClassNodeRoots.Add(x.Function, method);
+                            NodeCounts.Add(method, 1);
+                        }
+                        else
+                        {
+                            NodeCounts[ClassNodeRoots[x.Function]] = NodeCounts[ClassNodeRoots[x.Function]] + 1;
+                        }
+
+                        /* get method node */
+                        var methodNode = ClassNodeRoots[x.Function];
+
+                        if (x.IsError)
+                        {
+                            methodNode.BackColor = Color.Red;
+                            var methodParent = methodNode.Parent;
+                            while (methodParent != null)
                             {
-                                parentNode = ClassNodeRoots[searchString];
+                                methodParent.BackColor = Color.Yellow;
+                                methodParent = methodParent.Parent;
+                            }
+                        }
+                        else if (x.Duration >= Properties.Settings.Default.LongCall &&
+                                 methodNode.BackColor != Color.Yellow)
+                        {
+                            methodNode.BackColor = Color.LightGreen;
+                            var methodParent = methodNode.Parent;
+                            while (methodParent != null)
+                            {
+                                methodParent.BackColor = methodNode.BackColor;
+                                methodParent = methodParent.Parent;
+                            }
+                        }
+                    }
+                    else if (x.Function.Split('.').Length == 7)
+                    {
+                        /* App Engine code */
+                        if (AENodeRoots.ContainsKey(x.Function.Replace(".OnExecute","")) == false)
+                        {
+                            var aeParts = x.Function.Split('.');
+
+                            var parentNode = AppEngineRoot;
+
+                            for (var y = 0; y < aeParts.Length - 1; y++)
+                            {
+                                var searchString = String.Join(".", aeParts, 0, y + 1);
+                                if (AENodeRoots.ContainsKey(searchString) == false)
+                                {
+                                    var newNode = new TreeNode(aeParts[y]);
+                                    parentNode.Nodes.Add(newNode);
+                                    AENodeRoots.Add(searchString, newNode);
+                                    parentNode = newNode;
+                                }
+                                else
+                                {
+                                    parentNode = AENodeRoots[searchString];
+                                }
+                            }
+                            NodeCounts.Add(parentNode, 1);
+                        }
+                        else
+                        {
+                            /* entry already exists, just increment */
+                            NodeCounts[AENodeRoots[x.Function.Replace(".OnExecute","")]] = NodeCounts[AENodeRoots[x.Function.Replace(".OnExecute","")]]++;
+
+                        }
+
+                        var stepNode = AENodeRoots[x.Function.Replace(".OnExecute", "")];
+                        if (x.IsError)
+                        {
+                            stepNode.BackColor = Color.Red;
+                            var methodParent = stepNode.Parent;
+                            while (methodParent != null)
+                            {
+                                methodParent.BackColor = Color.Yellow;
+                                methodParent = methodParent.Parent;
+                            }
+                        }
+                        else if (x.Duration >= Properties.Settings.Default.LongCall &&
+                                 stepNode.BackColor != Color.Yellow)
+                        {
+                            stepNode.BackColor = Color.LightGreen;
+                            var methodParent = stepNode.Parent;
+                            while (methodParent != null)
+                            {
+                                methodParent.BackColor = stepNode.BackColor;
+                                methodParent = methodParent.Parent;
                             }
                         }
 
-                        /* we've built all of the packages, now lets add the actual method node */
-                        var method = parentNode.Nodes.Add(methodName);
-                        method.Tag = x;
-                        ClassNodeRoots.Add(x.Function, method);
-                        NodeCounts.Add(method, 1);
                     }
-                    else
-                    {
-                        NodeCounts[ClassNodeRoots[x.Function]] = NodeCounts[ClassNodeRoots[x.Function]] + 1;
-                    }
-
-                    /* get method node */
-                    var methodNode = ClassNodeRoots[x.Function];
-
-                    if (x.IsError)
-                    {
-                        methodNode.BackColor = Color.Red;
-                        var methodParent = methodNode.Parent;
-                        while (methodParent != null)
-                        {
-                            methodParent.BackColor = Color.Yellow;
-                            methodParent = methodParent.Parent;
-                        }
-                    }
-                    else if (x.Duration >= Properties.Settings.Default.LongCall && methodNode.BackColor != Color.Yellow)
-                    {
-                        methodNode.BackColor = Color.LightGreen;
-                        var methodParent = methodNode.Parent;
-                        while (methodParent != null)
-                        {
-                            methodParent.BackColor = methodNode.BackColor;
-                            methodParent = methodParent.Parent;
-                        }
-                    }
-
-
                 }
                 else if (x.Function.EndsWith("Activate"))
                 {

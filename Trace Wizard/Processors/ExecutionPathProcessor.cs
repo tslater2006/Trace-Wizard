@@ -548,7 +548,7 @@ namespace TraceWizard.Processors
             td.Statistics.Add(new StatisticItem() { Category = "Execution Path", Label = "Maximum Call Depth", Value = td.MaxCallDepth.ToString() });
             td.Statistics.Add(new StatisticItem() { Category = "Execution Path", Label = "Total Calls", Value = contextMap.Values.Sum(c=>c._ppcCodeCallCount).ToString() });
             td.Statistics.Add(new StatisticItem() { Category = "Execution Path", Label = "PeopleCode Exceptions", Value = contextMap.Values.Sum(c => c._ppcExceptionCount).ToString() });
-
+            
 
             /* copy all calls to the TraceData structure */
             /*executionCalls = data.ExecutionPath;
@@ -559,6 +559,7 @@ namespace TraceWizard.Processors
                 td.AllExecutionCalls.AddRange(ctx.allCalls);
             }
 
+            td.Statistics.Add(new StatisticItem() { Category = "Execution Path", Label = "Total PeopleCode Time", Value = td.AllExecutionCalls.Where(c => c.Parent == null).Sum(c => c.Duration).ToString() });
         }
 
         ExecutionCall FindCallForLineNumber(long lineNumber)

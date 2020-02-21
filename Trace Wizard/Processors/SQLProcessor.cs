@@ -161,7 +161,7 @@ namespace TraceWizard.Processors
             td.Statistics.Add(new StatisticItem() { Category = "SQL Statements", Label = "Longest Execution", Value = longest.Duration.ToString(),Tag = longest });
             SQLStatement mostFetches = Statements.OrderBy(s => s.FetchCount).Reverse().First();
             td.Statistics.Add(new StatisticItem() { Category = "SQL Statements", Label = "Most Fetches", Value = mostFetches.FetchCount.ToString(), Tag = mostFetches });
-
+            td.Statistics.Add(new StatisticItem(){Category = "SQL Statements", Label = "Total SQL Time", Value = Statements.Sum(s => s.Duration).ToString()});
         }
     }
 }

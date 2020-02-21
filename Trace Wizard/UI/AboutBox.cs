@@ -65,7 +65,7 @@ namespace TraceWizard
         {
             get
             {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                return MainForm.Version.ToString();
             }
         }
 

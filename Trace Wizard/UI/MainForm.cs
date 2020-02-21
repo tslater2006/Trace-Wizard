@@ -50,7 +50,7 @@ namespace TraceWizard
     {
         public static bool IsRunningMono = false;
         public static bool IsRunningOSX = false;
-        private double Version = 1.6;
+        public static double Version = 1.8;
 
         private void CheckForNewVersion()
         {

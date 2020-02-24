@@ -1487,6 +1487,22 @@ namespace TraceWizard
             }
 
         }
+
+        private void copyLineNumberToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sqlStatement = sqlListView.SelectedItems[0].Tag as SQLStatement;
+            if (sqlStatement != null)
+            {
+                if (IsRunningOSX)
+                {
+                    OSXClipboard.CopyToClipboard(sqlStatement.LineNumber.ToString());
+                }
+                else
+                {
+                    Clipboard.SetText(sqlStatement.LineNumber.ToString());
+                }
+            }
+        }
     }
 
     enum SQLDisplayType

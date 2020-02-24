@@ -162,6 +162,11 @@ namespace TraceWizard.Processors
             SQLStatement mostFetches = Statements.OrderBy(s => s.FetchCount).Reverse().First();
             td.Statistics.Add(new StatisticItem() { Category = "SQL Statements", Label = "Most Fetches", Value = mostFetches.FetchCount.ToString(), Tag = mostFetches });
             td.Statistics.Add(new StatisticItem(){Category = "SQL Statements", Label = "Total SQL Time", Value = Statements.Sum(s => s.Duration).ToString()});
+            
+            td.Statistics.Add(new StatisticItem(){Category = "SQL Statements", Label = "Total SELECT Time", Value = Statements.Where(s => s.Type == SQLType.SELECT).Sum(s => s.Duration).ToString()});
+            td.Statistics.Add(new StatisticItem(){Category = "SQL Statements", Label = "Total UPDATE Time", Value = Statements.Where(s => s.Type == SQLType.UPDATE).Sum(s => s.Duration).ToString()});
+            td.Statistics.Add(new StatisticItem(){Category = "SQL Statements", Label = "Total INSERT Time", Value = Statements.Where(s => s.Type == SQLType.INSERT).Sum(s => s.Duration).ToString()});
+            td.Statistics.Add(new StatisticItem(){Category = "SQL Statements", Label = "Total DELETE Time", Value = Statements.Where(s => s.Type == SQLType.DELETE).Sum(s => s.Duration).ToString()});
         }
     }
 }

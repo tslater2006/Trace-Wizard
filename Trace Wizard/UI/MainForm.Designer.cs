@@ -97,6 +97,7 @@
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
+            this.copyLineNumberToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.sqlItemContextStrip.SuspendLayout();
@@ -378,9 +379,10 @@
             this.copyStatementToolStripMenuItem,
             this.copyBindsToolStripMenuItem,
             this.toolStripSeparator2,
-            this.copyStackTraceToolStripMenuItem1});
+            this.copyStackTraceToolStripMenuItem1,
+            this.copyLineNumberToolStripMenuItem});
             this.sqlItemContextStrip.Name = "sqlItemContextStrip";
-            this.sqlItemContextStrip.Size = new System.Drawing.Size(210, 98);
+            this.sqlItemContextStrip.Size = new System.Drawing.Size(210, 142);
             this.sqlItemContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.sqlItemContextStrip_Opening);
             // 
             // copyResolvedStatementToolStripMenuItem
@@ -724,6 +726,13 @@
             this.toolStripContainer1.TabIndex = 2;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
+            // copyLineNumberToolStripMenuItem
+            // 
+            this.copyLineNumberToolStripMenuItem.Name = "copyLineNumberToolStripMenuItem";
+            this.copyLineNumberToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.copyLineNumberToolStripMenuItem.Text = "Copy Line Number";
+            this.copyLineNumberToolStripMenuItem.Click += new System.EventHandler(this.copyLineNumberToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -837,6 +846,7 @@
         private System.Windows.Forms.ToolStripMenuItem execGoToSlowestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showAEBuffer;
         private System.Windows.Forms.ToolStripMenuItem copySQLStatementToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyLineNumberToolStripMenuItem;
     }
 }
 

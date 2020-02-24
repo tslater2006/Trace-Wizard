@@ -1473,7 +1473,7 @@ namespace TraceWizard
         private void executionTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             var selectedItem = e.Node.Tag as ExecutionCall;
-            if (selectedItem != null && (selectedItem.Type == ExecutionCallType.SQL || selectedItem.Type == ExecutionCallType.AE_SQL)) 
+            if (selectedItem != null && (selectedItem.Type == ExecutionCallType.SQL || selectedItem.Type == ExecutionCallType.AE_SQL))
             {
                 mainTabStrip.SelectedTab = sqlStatementsTab;
                 IEnumerable<ListViewItem> lv = sqlListView.Items.Cast<ListViewItem>();
@@ -1501,6 +1501,29 @@ namespace TraceWizard
                 {
                     Clipboard.SetText(sqlStatement.LineNumber.ToString());
                 }
+            }
+        }
+
+        private void copyCallStartLineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var item = executionTree.SelectedNode.Tag;
+            var lineNumber = "";
+            if (item is ExecutionCall)
+            {
+                lineNumber = (item as ExecutionCall).StartLine.ToString();
+            }
+            else if (item is SQLStatement)
+            {
+                lineNumber = (item as SQLStatement).LineNumber.ToString();
+            }
+
+            if (IsRunningOSX)
+            {
+                OSXClipboard.CopyToClipboard(lineNumber);
+            }
+            else
+            {
+                Clipboard.SetText(lineNumber);
             }
         }
     }

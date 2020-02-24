@@ -66,11 +66,14 @@
             this.copyBindsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.copyStackTraceToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyLineNumberToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.executionContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyStackTraceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copySQLStatementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showAEBuffer = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.copyCallStartLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BottomToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.TopToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.RightToolStripPanel = new System.Windows.Forms.ToolStripPanel();
@@ -97,7 +100,6 @@
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
-            this.copyLineNumberToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.sqlItemContextStrip.SuspendLayout();
@@ -382,7 +384,7 @@
             this.copyStackTraceToolStripMenuItem1,
             this.copyLineNumberToolStripMenuItem});
             this.sqlItemContextStrip.Name = "sqlItemContextStrip";
-            this.sqlItemContextStrip.Size = new System.Drawing.Size(210, 142);
+            this.sqlItemContextStrip.Size = new System.Drawing.Size(210, 120);
             this.sqlItemContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.sqlItemContextStrip_Opening);
             // 
             // copyResolvedStatementToolStripMenuItem
@@ -418,6 +420,13 @@
             this.copyStackTraceToolStripMenuItem1.Text = "Copy Stack Trace";
             this.copyStackTraceToolStripMenuItem1.Click += new System.EventHandler(this.copyStackTraceToolStripMenuItem1_Click);
             // 
+            // copyLineNumberToolStripMenuItem
+            // 
+            this.copyLineNumberToolStripMenuItem.Name = "copyLineNumberToolStripMenuItem";
+            this.copyLineNumberToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.copyLineNumberToolStripMenuItem.Text = "Copy Line Number";
+            this.copyLineNumberToolStripMenuItem.Click += new System.EventHandler(this.copyLineNumberToolStripMenuItem_Click);
+            // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.Filter = "Trace Wizard Files|*.twiz";
@@ -428,9 +437,11 @@
             this.executionContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyStackTraceToolStripMenuItem,
             this.copySQLStatementToolStripMenuItem,
-            this.showAEBuffer});
+            this.showAEBuffer,
+            this.toolStripSeparator5,
+            this.copyCallStartLineToolStripMenuItem});
             this.executionContextStrip.Name = "executionContextStrip";
-            this.executionContextStrip.Size = new System.Drawing.Size(216, 70);
+            this.executionContextStrip.Size = new System.Drawing.Size(216, 98);
             this.executionContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.executionContextStrip_Opening);
             // 
             // copyStackTraceToolStripMenuItem
@@ -455,6 +466,18 @@
             this.showAEBuffer.Text = "Show Current State Record";
             this.showAEBuffer.Visible = false;
             this.showAEBuffer.Click += new System.EventHandler(this.showAEBuffer_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(212, 6);
+            // 
+            // copyCallStartLineToolStripMenuItem
+            // 
+            this.copyCallStartLineToolStripMenuItem.Name = "copyCallStartLineToolStripMenuItem";
+            this.copyCallStartLineToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.copyCallStartLineToolStripMenuItem.Text = "Copy Line Number";
+            this.copyCallStartLineToolStripMenuItem.Click += new System.EventHandler(this.copyCallStartLineToolStripMenuItem_Click);
             // 
             // BottomToolStripPanel
             // 
@@ -726,13 +749,6 @@
             this.toolStripContainer1.TabIndex = 2;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
-            // copyLineNumberToolStripMenuItem
-            // 
-            this.copyLineNumberToolStripMenuItem.Name = "copyLineNumberToolStripMenuItem";
-            this.copyLineNumberToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.copyLineNumberToolStripMenuItem.Text = "Copy Line Number";
-            this.copyLineNumberToolStripMenuItem.Click += new System.EventHandler(this.copyLineNumberToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -847,6 +863,8 @@
         private System.Windows.Forms.ToolStripMenuItem showAEBuffer;
         private System.Windows.Forms.ToolStripMenuItem copySQLStatementToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyLineNumberToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem copyCallStartLineToolStripMenuItem;
     }
 }
 

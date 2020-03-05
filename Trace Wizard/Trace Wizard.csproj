@@ -95,6 +95,7 @@
     <Compile Include="Data\StatisticItem.cs" />
     <Compile Include="Data\Serialization\TraceDeserializer.cs" />
     <Compile Include="Data\Serialization\TraceSerializer.cs" />
+    <Compile Include="Data\VariableBundle.cs" />
     <Compile Include="Diff\Diff.cs" />
     <Compile Include="Diff\PathDiff.cs" />
     <Compile Include="Processors\AETExecutionPathProcessor.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Processors\AETTraceProcessor.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Processors\ComponentTraceVariableProcessor.cs" />
     <Compile Include="UI\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>

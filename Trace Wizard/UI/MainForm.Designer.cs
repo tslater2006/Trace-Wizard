@@ -865,6 +865,7 @@
         private System.Windows.Forms.ToolStripMenuItem copyLineNumberToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem copyCallStartLineToolStripMenuItem;
+        private System.Windows.Forms.ListView lstVariables;
     }
 }
 

@@ -275,6 +275,8 @@ namespace TraceWizard
 
             StatsTab.Controls.Add(tabPage);
 
+            UIBuilder.BuildVariableList(lstVariables, traceData.Variables);
+
             previousSortColumn = 0;
 
         }

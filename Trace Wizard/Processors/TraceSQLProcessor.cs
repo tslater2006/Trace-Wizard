@@ -49,7 +49,7 @@ namespace TraceWizard.Processors
             List<ITraceProcessor> Processors = new List<ITraceProcessor>();
             Processors.Add(new SQLProcessor());
             Processors.Add(new StackTraceProcessor());
-
+            Processors.Add(new ComponentTraceVariableProcessor());
             /* NOTE: This one is purposefully last because it relies on SQL and StackTrace data in post process */
             Processors.Add(new ExecutionPathProcessor());
             foreach (ITraceProcessor proc in Processors)

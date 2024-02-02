@@ -133,7 +133,7 @@ namespace TraceWizard.Processors
 
             bool callFound = false;
             ExecutionCall call = null;
-            while (callFound == false)
+            while (callFound == false && callChain.Count > 0)
             {
                 call = callChain.Pop();
                 lastPopped = call;

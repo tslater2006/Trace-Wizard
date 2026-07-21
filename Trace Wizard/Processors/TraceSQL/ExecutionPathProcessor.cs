@@ -197,22 +197,29 @@ namespace TraceWizard.Processors
             var func = match.Groups[2].Value;
             var dur = match.Groups[3].Value;
 
-            if (callChain.Count > 0 && callChain.Peek().Type == ExecutionCallType.CALL)
+            /* Guard: if no frame on the chain matches this end-ext's Nest, it is orphaned      *
+             * (e.g. a malformed/truncated trace, or state carried over from a bad context).   *
+             * Skip it rather than draining the whole stack and then popping an empty one.      */
+            if (!callChain.Any(c => c.Type != ExecutionCallType.CALL && c.Nest == nest))
             {
-                while (callChain.Count > 0 && (callChain.Peek().Type == ExecutionCallType.CALL || callChain.Peek().Nest != nest))
+                Debug.WriteLine($"ExecutionPathProcessor: orphaned end-ext at line {lineNumber} (Nest={nest} {func}); no matching frame on call chain. Skipping.");
+                ResetReturnStack();
+                return;
+            }
+
+            /* Reap any dangling CALL frames (getters/setters/etc. that never got their own    *
+             * start-ext) sitting above the matching external. The guard above guarantees the   *
+             * matching frame exists, so this loop always stops on it and never empties.        */
+            while (callChain.Peek().Type == ExecutionCallType.CALL || callChain.Peek().Nest != nest)
+            {
+                var popped = callChain.Pop();
+                if (popped.StopLine == 0)
                 {
-                    var popped = callChain.Pop();
-                    if (popped.StopLine == 0)
-                    {
-                        popped.StopLine = lineNumber;
-                    }
-                    lastPopped = popped;
+                    popped.StopLine = lineNumber;
                 }
+                lastPopped = popped;
             }
-            if (callChain.Count == 0)
-            {
-                Debugger.Break();
-            }
+
             var call = callChain.Pop();
             lastPopped = call;
             call.StopLine = lineNumber;
@@ -466,7 +473,11 @@ namespace TraceWizard.Processors
     public class ExecutionPathProcessor : ITraceProcessor
     {
         //Regex contextMarker = new Regex("PSAPPSRV\\.\\d+ \\(\\d+\\)");
-        Regex contextMarker = new Regex(@"^PSAPPSRV\.\d+.+?\(\d+\)");
+        // NOTE: group the stable identifiers (process id + trailing "(NN)") and EXCLUDE the
+        // variable "[timestamp]" that sits between them. If the timestamp is part of the context
+        // key, a millisecond rollover mid-call-tree spawns a new ExecutionContext with an empty
+        // callChain, and the matching end-ext then pops an empty stack.
+        Regex contextMarker = new Regex(@"^(PSAPPSRV\.\d+).+?(\(\d+\))");
         Regex startMarker = new Regex(">>> start\\s+Nest=(\\d+)\\s+(.*)");
         Regex startExtMarker = new Regex(">>> start-ext\\sNest=(\\d+)\\s(.*)");
         Regex endMarker = new Regex("<<< end\\s+Nest=(\\d+)\\s+(.*?)\\s+Dur=(\\d+\\.\\d+)");
@@ -614,7 +625,8 @@ namespace TraceWizard.Processors
 
             if (!this.isAETrace)
             {
-                currentContextString = contextMarker.Match(line).Groups[0].Value;
+                var ctxMatch = contextMarker.Match(line);
+                currentContextString = ctxMatch.Groups[1].Value + ctxMatch.Groups[2].Value;
             } else
             {
                 currentContextString = "App Engine Execution";
